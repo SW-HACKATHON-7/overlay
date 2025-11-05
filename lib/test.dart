@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:studytest/screenshot_service.dart';
 
 class MessangerChatHead extends StatefulWidget {
   const MessangerChatHead({Key? key}) : super(key: key);
@@ -14,7 +15,7 @@ class MessangerChatHead extends StatefulWidget {
 
 class _MessangerChatHeadState extends State<MessangerChatHead> {
   Color color = const Color(0xFFFFFFFF);
-  BoxShape _currentShape = BoxShape.circle;
+  BoxShape _currentShape = BoxShape.rectangle;
   static const String _kPortNameOverlay = 'OVERLAY';
   static const String _kPortNameHome = 'UI';
   final _receivePort = ReceivePort();
@@ -43,60 +44,82 @@ class _MessangerChatHeadState extends State<MessangerChatHead> {
     return Material(
       color: Colors.transparent,
       elevation: 0.0,
-      child: GestureDetector(
-        onTap: () async {
-          if (_currentShape == BoxShape.rectangle) {
-            await FlutterOverlayWindow.resizeOverlay(50, 100, true);
-            setState(() {
-              _currentShape = BoxShape.circle;
-            });
-          } else {
-            await FlutterOverlayWindow.resizeOverlay(
-              WindowSize.matchParent,
-              WindowSize.matchParent,
-              false,
-            );
-            setState(() {
-              _currentShape = BoxShape.rectangle;
-            });
-          }
-        },
+      child: Align(
+        alignment: Alignment.topCenter,
         child: Container(
-          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
             color: Colors.white,
-            shape: _currentShape,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _currentShape == BoxShape.rectangle
-                    ? SizedBox(
-                        width: 200.0,
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.black,
-                          ),
-                          onPressed: () {
-                            homePort ??= IsolateNameServer.lookupPortByName(
-                              _kPortNameHome,
-                            );
-                            homePort?.send('Date: ${DateTime.now()}');
-                          },
-                          child: const Text("Send message to UI"),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-                _currentShape == BoxShape.rectangle
-                    ? messageFromOverlay == null
-                        ? const FlutterLogo()
-                        : Text(messageFromOverlay ?? '')
-                    : const FlutterLogo()
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    onPressed: () {
+                      homePort ??= IsolateNameServer.lookupPortByName(
+                        _kPortNameHome,
+                      );
+                      homePort?.send('COMMAND:TAKE_SCREENSHOT');
+                      log('Requested screenshot from overlay');
+                    },
+                    child: const Text(
+                      "Screenshot",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    onPressed: () {
+                      homePort ??= IsolateNameServer.lookupPortByName(
+                        _kPortNameHome,
+                      );
+                      homePort?.send('COMMAND:START_AUTO_SCROLL');
+                      log('Requested auto scroll from overlay');
+                    },
+                    child: const Text(
+                      "Auto Scroll",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    onPressed: () {
+                      FlutterOverlayWindow.closeOverlay();
+                      log('Closed overlay');
+                    },
+                    child: const Text(
+                      "Close",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
         ),
       ),
     );
