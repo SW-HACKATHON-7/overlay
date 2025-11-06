@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:hackerton/presentation/main/screens/main_screen.dart';
+import 'package:hackerton/presentation/verify/verify_screen.dart';
 import 'package:hackerton/splash_screen.dart';
 
 final router = GoRouter(
@@ -15,10 +16,16 @@ final router = GoRouter(
       name: RouteNames.main,
       builder: (context, state) => const MainScreen(),
     ),
+    GoRoute(
+      path: '/verify',
+      name: RouteNames.verify,
+      builder: (context, state) => const VerifyScreen(),
+    ),
   ],
 );
 
 class RouteNames {
   static const String splash = 'splash';
   static const String main = 'main';
+  static const String verify = 'verify';
 }

@@ -12,7 +12,7 @@ class SplashScreen extends HookWidget {
     useEffect(() {
       Future.delayed(const Duration(seconds: 3), () {
         if (context.mounted) {
-          context.go('/main');
+          context.go('/verify');
         }
       });
       return null;
