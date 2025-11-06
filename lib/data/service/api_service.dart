@@ -42,4 +42,30 @@ abstract class ApiService {
     @Path("session_id") String sessionId,
     @Part(name: "file") File file,
   );
+
+  // 6. 스크린샷으로 분석 결과 조회 (여러 장 지원)
+  @POST("/sessions/{session_id}/view")
+  @MultiPart()
+  Future<ViewResponse> viewByScreenshots(
+    @Path("session_id") String sessionId,
+    @Part(name: "files") List<File> files,
+  );
+
+  // 7. 다음 대화 예측
+  @POST("/sessions/{session_id}/predict-next")
+  Future<PredictNextResponse> predictNextMessage(
+    @Path("session_id") String sessionId,
+  );
+
+  // 8. 대화 시작 (프록시)
+  @POST("/start-conversation")
+  Future<StartConversationResponse> startConversation(
+    @Body() StartConversationRequest request,
+  );
+
+  // 9. 대화 이어가기 (프록시)
+  @POST("/continue-conversation")
+  Future<ContinueConversationResponse> continueConversation(
+    @Body() ContinueConversationRequest request,
+  );
 }
