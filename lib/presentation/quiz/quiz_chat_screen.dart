@@ -81,7 +81,7 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _TopMenu(relationship: widget.relationship),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
 
           // 에러 메시지 표시
           if (state.errorMessage != null)
@@ -237,10 +237,10 @@ class _TopMenu extends StatelessWidget {
           relationship,
           style: HackerTonTypography.MainLarge.copyWith(
             color: Colors.black,
-            fontSize: 24,
+            fontSize: 20,
           ),
         ),
-        const SizedBox(height: 25),
+        const SizedBox(height: 12),
         Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -249,16 +249,16 @@ class _TopMenu extends StatelessWidget {
                 '${DateTime.now().year}년 ${DateTime.now().month}월 ${DateTime.now().day}일 ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
                 style: HackerTonTypography.MainSmall.copyWith(
                   color: Colors.grey,
-                  fontSize: 10,
+                  fontSize: 9,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               ShaderMask(
                 shaderCallback: (bounds) =>
                     HackerTonGradients.orangeToPink.createShader(bounds),
                 child: Text(
                   '본 내용은 모두 가상으로 만들어 낸 상황입니다',
-                  style: HackerTonTypography.MainSmall.copyWith(fontSize: 10),
+                  style: HackerTonTypography.MainSmall.copyWith(fontSize: 9),
                 ),
               ),
             ],
