@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Overlay</string>
+    <string name="accessibility_service_description">자동 스크롤 및 스크린샷 캡처를 위한 접근성 서비스입니다. 화면을 자동으로 스크롤하면서 연속 스크린샷을 촬영합니다.</string>
+</resources>
