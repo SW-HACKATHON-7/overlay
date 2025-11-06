@@ -16,8 +16,6 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
   int? selectedIndex;
   bool isNavigating = false;
 
-  
-
   void _handleItemTap(int index) async {
     if (isNavigating) return;
 
@@ -64,11 +62,6 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: HackerTonColors.grey),
-            onPressed: isNavigating ? null : () => Navigator.of(context).pop(),
-          ),
-          const SizedBox(height: 20),
           Text(
             '대화 상대를\n선택해주세요',
             style: HackerTonTypography.MainLarge.copyWith(
