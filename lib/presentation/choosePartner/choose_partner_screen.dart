@@ -24,7 +24,7 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
       isNavigating = true;
     });
 
-    // 선택한 관계에 따라 퀴즈 화면으로 이동
+    // 선택한 관계에 따라 권한 허용 화면으로 이동
     String relationship = '';
     switch (index) {
       case 0:
@@ -47,7 +47,7 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     if (mounted) {
-      await context.push('/quiz', extra: relationship);
+      await context.push('/verify', extra: relationship);
       if (!mounted) return;
       setState(() {
         selectedIndex = null;

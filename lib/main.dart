@@ -39,6 +39,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   final _receivePort = ReceivePort();
   SendPort? overlayPort;
   final _routerKey = GlobalKey<NavigatorState>();
+  bool _shouldNavigateToAnalysisResult = false;
 
   @override
   void initState() {
@@ -208,15 +209,14 @@ class _MyAppState extends ConsumerState<MyApp> {
           );
       print('Provider 저장 완료');
 
-      // 분석 결과 화면으로 이동 (바로 호출)
-      print('화면 이동 시작...');
-      Future.delayed(Duration.zero, () {
-        print('Future.delayed 실행 - router.go 호출');
-        router.go('/analysis_result');
-        print('router.go 완료');
+      // 분석 결과 화면으로 이동 (setState로 rebuild 트리거)
+      print('화면 이동 플래그 설정...');
+      setState(() {
+        _shouldNavigateToAnalysisResult = true;
       });
+      print('setState 호출 완료 - rebuild 예정');
 
-      print('✓ 분석 결과 저장 및 화면 이동 스케줄링 완료');
+      print('✓ 분석 결과 저장 및 화면 이동 플래그 설정 완료');
     } catch (e, stackTrace) {
       print('❌ Error handling analysis result: $e');
       print('Stack trace: $stackTrace');
@@ -231,6 +231,39 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // 분석 결과 화면으로 네비게이션
+    if (_shouldNavigateToAnalysisResult) {
+      print('build: _shouldNavigateToAnalysisResult가 true임 - 네비게이션 스케줄링');
+      _shouldNavigateToAnalysisResult = false;
+
+      // 메인 화면으로 먼저 이동 후, 그 화면에서 분석 결과로 자동 이동
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print('PostFrameCallback 실행');
+
+        // 메인 화면으로 이동
+        Future.delayed(const Duration(milliseconds: 100), () {
+          print('메인 화면으로 이동 시도...');
+          try {
+            router.go('/main');
+            print('✓ 메인 화면으로 이동 완료');
+          } catch (e) {
+            print('❌ 메인 화면 이동 에러: $e');
+          }
+        });
+
+        // 메인 화면 도착 후 분석 결과 화면으로 이동
+        Future.delayed(const Duration(milliseconds: 800), () {
+          print('분석 결과 화면으로 이동 시도...');
+          try {
+            router.push('/analysis_result');
+            print('✓ 분석 결과 화면으로 이동 완료');
+          } catch (e) {
+            print('❌ 분석 결과 화면 이동 에러: $e');
+          }
+        });
+      });
+    }
+
     return MaterialApp.router(
       routerConfig: router,
       debugShowCheckedModeBanner: false,

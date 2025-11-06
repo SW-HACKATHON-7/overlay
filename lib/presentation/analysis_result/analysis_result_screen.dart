@@ -153,13 +153,6 @@ class _TopMenu extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          relationship,
-          style: HackerTonTypography.MainLarge.copyWith(
-            color: Colors.black,
-            fontSize: 20,
-          ),
-        ),
         const SizedBox(height: 12),
         Center(
           child: Column(
@@ -167,7 +160,7 @@ class _TopMenu extends StatelessWidget {
             children: [
               Text(
                 '${DateTime.now().year}년 ${DateTime.now().month}월 ${DateTime.now().day}일 ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
-                style: HackerTonTypography.MainSmall.copyWith(
+                style: const TextStyle(
                   color: Colors.grey,
                   fontSize: 9,
                 ),
@@ -176,9 +169,9 @@ class _TopMenu extends StatelessWidget {
               ShaderMask(
                 shaderCallback: (bounds) =>
                     HackerTonGradients.orangeToPink.createShader(bounds),
-                child: Text(
+                child: const Text(
                   '실제 대화 분석 결과입니다',
-                  style: HackerTonTypography.MainSmall.copyWith(fontSize: 9),
+                  style: TextStyle(fontSize: 9),
                 ),
               ),
             ],
@@ -207,7 +200,7 @@ class _ReceiveMessage extends StatelessWidget {
             ),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             decoration: BoxDecoration(
-              gradient: HackerTonGradients.orangeToPink,
+              color: Colors.grey[300],
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -216,8 +209,8 @@ class _ReceiveMessage extends StatelessWidget {
             ),
             child: Text(
               message,
-              style: HackerTonTypography.MainSmall.copyWith(
-                color: Colors.white,
+              style: const TextStyle(
+                color: Colors.black87,
                 fontSize: 14,
               ),
             ),
@@ -261,21 +254,44 @@ class _SendMessage extends StatelessWidget {
   FeedbackIconType _getFeedbackIcon(double? score) {
     if (score == null) return FeedbackIconType.theory;
     final intScore = score.toInt();
-    if (intScore >= 95) return FeedbackIconType.best_excellent;
-    if (intScore >= 90) return FeedbackIconType.excellent;
-    if (intScore >= 85) return FeedbackIconType.best;
-    if (intScore >= 80) return FeedbackIconType.distinguished;
-    if (intScore >= 70) return FeedbackIconType.good;
-    if (intScore >= 60) return FeedbackIconType.inaccurate;
-    if (intScore >= 50) return FeedbackIconType.mistake;
-    if (intScore >= 40) return FeedbackIconType.missed_count;
-    if (intScore >= 30) return FeedbackIconType.blunder;
+    // 점수는 0-10 범위
+    if (intScore >= 10) return FeedbackIconType.best_excellent;
+    if (intScore >= 9) return FeedbackIconType.excellent;
+    if (intScore >= 8) return FeedbackIconType.best;
+    if (intScore >= 7) return FeedbackIconType.distinguished;
+    if (intScore >= 6) return FeedbackIconType.good;
+    if (intScore >= 5) return FeedbackIconType.inaccurate;
+    if (intScore >= 4) return FeedbackIconType.mistake;
+    if (intScore >= 3) return FeedbackIconType.missed_count;
+    if (intScore >= 2) return FeedbackIconType.blunder;
     return FeedbackIconType.theory;
+  }
+
+  Color _getScoreColor(double? score) {
+    if (score == null) return Colors.white;
+
+    // 점수를 0-10 범위로 클램핑
+    final clampedScore = score.clamp(0.0, 10.0);
+
+    if (clampedScore >= 8) {
+      // 8-10: 초록색 (밝은 초록 ~ 진한 초록)
+      final t = (clampedScore - 8) / 2; // 0-1 사이 값
+      return Color.lerp(Colors.lightGreen[200], Colors.green[400], t)!;
+    } else if (clampedScore >= 5) {
+      // 5-7: 노란색 (노란색 ~ 주황색)
+      final t = (clampedScore - 5) / 3; // 0-1 사이 값
+      return Color.lerp(Colors.yellow[200], Colors.orange[300], t)!;
+    } else {
+      // 0-4: 빨간색 (밝은 빨강 ~ 진한 빨강)
+      final t = clampedScore / 5; // 0-1 사이 값
+      return Color.lerp(Colors.red[300], Colors.red[200], t)!;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final feedbackIcon = message.score != null ? _getFeedbackIcon(message.score) : null;
+    final backgroundColor = _getScoreColor(message.score);
 
     return Align(
       alignment: Alignment.centerRight,
@@ -285,7 +301,7 @@ class _SendMessage extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: HackerTonColors.white,
+          color: backgroundColor,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(12),
             topRight: Radius.circular(12),
@@ -338,7 +354,10 @@ class _SendMessage extends StatelessWidget {
             Flexible(
               child: Text(
                 message.text,
-                style: const TextStyle(color: Colors.blue, fontSize: 14),
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
               ),
             ),
           ],

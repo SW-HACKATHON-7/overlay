@@ -5,9 +5,12 @@ import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/core/widget/base_scaffold.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:hackerton/services/screenshot_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifyScreen extends StatefulWidget {
-  const VerifyScreen({super.key});
+  final String relationship;
+
+  const VerifyScreen({super.key, required this.relationship});
 
   @override
   State<VerifyScreen> createState() => _VerifyScreenState();
@@ -91,6 +94,11 @@ class _VerifyScreenState extends State<VerifyScreen>
   }
 
   Future<void> _startOverlay() async {
+    // relationship 데이터를 SharedPreferences에 저장
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('relationship', widget.relationship);
+    print('SharedPreferences에 relationship 저장: ${widget.relationship}');
+
     // 오버레이 시작
     await FlutterOverlayWindow.showOverlay(
       alignment: OverlayAlignment.topCenter,
