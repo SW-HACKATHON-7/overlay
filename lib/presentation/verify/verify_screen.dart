@@ -13,7 +13,8 @@ class VerifyScreen extends StatefulWidget {
   State<VerifyScreen> createState() => _VerifyScreenState();
 }
 
-class _VerifyScreenState extends State<VerifyScreen> with WidgetsBindingObserver {
+class _VerifyScreenState extends State<VerifyScreen>
+    with WidgetsBindingObserver {
   bool locationPermission = false;
   bool cameraPermission = false;
   bool notificationPermission = false;
@@ -87,6 +88,22 @@ class _VerifyScreenState extends State<VerifyScreen> with WidgetsBindingObserver
         notificationPermission = true;
       });
     }
+  }
+
+  Future<void> _startOverlay() async {
+    // 오버레이 시작
+    await FlutterOverlayWindow.showOverlay(
+      alignment: OverlayAlignment.topCenter,
+      enableDrag: false,
+      overlayTitle: "대화 분석",
+      overlayContent: "대화 분석이 필요해요",
+      flag: OverlayFlag.focusPointer,
+      visibility: NotificationVisibility.visibilityPublic,
+      positionGravity: PositionGravity.none,
+      width: WindowSize.matchParent,
+      height: 800,
+      startPosition: const OverlayPosition(0, 0),
+    );
   }
 
   @override
@@ -173,7 +190,7 @@ class _VerifyScreenState extends State<VerifyScreen> with WidgetsBindingObserver
                 child: ElevatedButton(
                   onPressed: allPermissionsGranted
                       ? () {
-                          context.push('/choose_partner');
+                          _startOverlay(); // 오버레이 실행
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
