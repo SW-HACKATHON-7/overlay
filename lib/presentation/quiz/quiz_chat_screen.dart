@@ -1,33 +1,177 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/icon.dart';
 import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/core/enum/feedback_enum.dart';
 import 'package:hackerton/core/widget/back_appbar.dart';
 import 'package:hackerton/core/widget/base_scaffold.dart';
+import 'package:hackerton/presentation/quiz/quiz_chat_notifier.dart';
+import 'package:hackerton/presentation/quiz/quiz_chat_state.dart';
 
-class QuizChatScreen extends StatelessWidget {
-  const QuizChatScreen({super.key});
+class QuizChatScreen extends ConsumerStatefulWidget {
+  final String relationship;
+
+  const QuizChatScreen({super.key, this.relationship = '직장 상사'});
+
+  @override
+  ConsumerState<QuizChatScreen> createState() => _QuizChatScreenState();
+}
+
+class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // 화면 진입 시 대화 시작
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(quizChatNotifierProvider.notifier).startConversation(widget.relationship);
+    });
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+  }
+
+  void _sendMessage() {
+    final message = _messageController.text.trim();
+    if (message.isEmpty) return;
+
+    ref.read(quizChatNotifierProvider.notifier).sendMessage(message);
+    _messageController.clear();
+    _scrollToBottom();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(quizChatNotifierProvider);
+
     return BaseScaffold(
       appBar: BackAppbar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _TopMenu(),
+          _TopMenu(relationship: widget.relationship),
           const SizedBox(height: 24),
+
+          // 에러 메시지 표시
+          if (state.errorMessage != null)
+            Container(
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                state.errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+
+          // 메시지 리스트
           Expanded(
-            child: ListView(
-              children: [
-                _ReceiveMessage(
-                  message: '안녕하세요 홍길동 담당자님\n어제 서비스 홍보글이 왜 SNS에 올라오지 않았는지 의문입니다',
+            child: state.isLoading && state.messages.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    controller: _scrollController,
+                    itemCount: state.messages.length,
+                    itemBuilder: (context, index) {
+                      final message = state.messages[index];
+                      if (message.isUser) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _SendMessage(message: message),
+                        );
+                      } else {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _ReceiveMessage(message: message.text),
+                        );
+                      }
+                    },
+                  ),
+          ),
+
+          // 로딩 인디케이터
+          if (state.isLoading && state.messages.isNotEmpty)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+
+          // 입력창
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
                 ),
-                const SizedBox(height: 12),
-                _SendMessage(
-                  message: '수정 요청 오길래 기다렸습니다',
-                  iconType: FeedbackIconType.mistake,
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: InputDecoration(
+                      hintText: '메시지를 입력하세요...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                    ),
+                    maxLines: null,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => _sendMessage(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: state.isLoading ? null : _sendMessage,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      gradient: state.isLoading
+                          ? null
+                          : HackerTonGradients.orangeToPink,
+                      color: state.isLoading ? Colors.grey : null,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -39,7 +183,9 @@ class QuizChatScreen extends StatelessWidget {
 }
 
 class _TopMenu extends StatelessWidget {
-  const _TopMenu({super.key});
+  final String relationship;
+
+  const _TopMenu({required this.relationship});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +193,7 @@ class _TopMenu extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '직장 상사',
+          relationship,
           style: HackerTonTypography.MainLarge.copyWith(
             color: Colors.black,
             fontSize: 24,
@@ -59,7 +205,7 @@ class _TopMenu extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                '2025년 11월 5일 9:41',
+                '${DateTime.now().year}년 ${DateTime.now().month}월 ${DateTime.now().day}일 ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
                 style: HackerTonTypography.MainSmall.copyWith(
                   color: Colors.grey,
                   fontSize: 10,
@@ -85,7 +231,7 @@ class _TopMenu extends StatelessWidget {
 class _ReceiveMessage extends StatelessWidget {
   final String message;
 
-  const _ReceiveMessage({super.key, required this.message});
+  const _ReceiveMessage({required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -122,17 +268,11 @@ class _ReceiveMessage extends StatelessWidget {
 }
 
 class _SendMessage extends StatelessWidget {
-  final String message;
-  final FeedbackIconType iconType;
+  final ChatMessage message;
 
-  const _SendMessage({
-    super.key,
-    required this.message,
-    required this.iconType,
-  });
+  const _SendMessage({required this.message});
 
-  Widget _getIcon() {
-    // _getIcon() 메서드는 기존과 동일합니다.
+  Widget _getIcon(FeedbackIconType iconType) {
     switch (iconType) {
       case FeedbackIconType.best_excellent:
         return HackerTonIcon.bestExcellent();
@@ -159,15 +299,12 @@ class _SendMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Align 위젯으로 감싸서 오른쪽 정렬
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.8,
         ),
-        // 2. 이 alignment 속성은 더 이상 필요 없으므로 제거
-        // alignment: Alignment.bottomRight,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: HackerTonColors.white,
@@ -178,19 +315,19 @@ class _SendMessage extends StatelessWidget {
           ),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min, // 자식 크기만큼만 차지
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Transform.translate(
-              offset: const Offset(-15, -15), // 위로 2픽셀 이동
-              child: _getIcon(),
-            ),
-            const SizedBox(width: 3),
-            // 3. Flexible로 Text를 감싸서 긴 텍스트 줄바꿈 처리
+            if (message.feedbackIcon != null)
+              Transform.translate(
+                offset: const Offset(-15, -15),
+                child: _getIcon(message.feedbackIcon!),
+              ),
+            if (message.feedbackIcon != null) const SizedBox(width: 3),
             Flexible(
               child: Text(
-                message,
-                style: TextStyle(color: Colors.blue, fontSize: 14),
+                message.text,
+                style: const TextStyle(color: Colors.blue, fontSize: 14),
               ),
             ),
           ],
