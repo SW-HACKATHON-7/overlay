@@ -136,6 +136,7 @@ class ModeSelectionItem extends StatelessWidget {
               description,
               textAlign: TextAlign.center,
               style: HackerTonTypography.MainSmall.copyWith(
+                overflow: TextOverflow.ellipsis,
                 fontSize: 14,
                 color: isSelected ? Colors.white : HackerTonColors.grey,
               ),
