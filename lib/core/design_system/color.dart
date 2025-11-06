@@ -9,6 +9,7 @@ class HackerTonColors {
   static const pink = Color(0xFFFF008C);
   static const grey200 = Color(0xFF898989);
   static const grey = Color(0xFF9E9DA3);
+  static const grey50 = Color(0xFFE0E0E0);
   static const white = Color(0xFFFAFAFA);
   static const black = Color(0xFF000000);
 }

@@ -113,6 +113,7 @@ class ModeSelectionItem extends StatelessWidget {
             ),
           ],
         ),
+        constraints: const BoxConstraints(minHeight: 180),
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -135,6 +136,7 @@ class ModeSelectionItem extends StatelessWidget {
             Text(
               description,
               textAlign: TextAlign.center,
+              maxLines: 2,
               style: HackerTonTypography.MainSmall.copyWith(
                 overflow: TextOverflow.ellipsis,
                 fontSize: 14,

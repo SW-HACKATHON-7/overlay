@@ -22,7 +22,7 @@ final router = GoRouter(
     GoRoute(
       path: '/main',
       name: RouteNames.main,
-      builder: (context, state) => const MainScreen(),
+      builder: (context, state) => MainScreen(),
     ),
     GoRoute(
       path: '/verify',

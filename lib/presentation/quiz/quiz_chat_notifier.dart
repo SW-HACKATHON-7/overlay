@@ -9,6 +9,11 @@ class QuizChatNotifier extends StateNotifier<QuizChatState> {
 
   QuizChatNotifier(this.ref) : super(const QuizChatState());
 
+  // Reset all chat states to initial values
+  void resetState() {
+    state = const QuizChatState();
+  }
+
   // 대화 시작
   Future<void> startConversation(String relationship) async {
     state = state.copyWith(

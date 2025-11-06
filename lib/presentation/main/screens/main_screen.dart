@@ -1,162 +1,265 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hackerton/core/design_system/color.dart';
+import 'package:hackerton/core/design_system/icon.dart';
 import 'package:hackerton/core/design_system/typography.dart';
-import 'package:hackerton/core/widget/base_scaffold.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hackerton/presentation/choosePartner/choose_partner_screen.dart';
 
-class MainScreen extends HookConsumerWidget {
-  const MainScreen({super.key});
-
+class MainScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return BaseScaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset('assets/images/main_logo.svg'),
-            const SizedBox(height: 110),
-            const SizedBox(height: 385, child: _CardList()),
-          ],
-        ),
-      ),
-    );
-  }
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _CardList extends HookWidget {
-  const _CardList({super.key});
+class _MainScreenState extends State<MainScreen> {
+  int index = 0;
+
+  final pages = [
+    HomeScreen(),
+    ChoosePartnerScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final scrollController = useScrollController();
-    final screenWidth = MediaQuery.of(context).size.width;
-    final offset = 292 + 30 - (screenWidth / 2) + (292 / 2) + 29.5;
-
-    useEffect(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        scrollController.jumpTo(offset);
-      });
-      return null;
-    }, []);
-
-    return ListView(
-      controller: scrollController,
-      scrollDirection: Axis.horizontal,
-      children: [
-        _MenuCard(
-          color: HackerTonColors.orange,
-          title: '대화 퀴즈',
-          description: '답변 연습을 하여 실력을 향상합니다',
-          buttonText: '퀴즈 풀러 가기',
-          onPressed: () => context.go('/quiz'),
-        ),
-        const SizedBox(width: 30),
-        _MenuCard(
-          color: HackerTonColors.red,
-          title: '대화 복기',
-          description: '대화 내역을 분석하여 복기합니다',
-          buttonText: '복기하기',
-          onPressed: () {},
-        ),
-        const SizedBox(width: 30),
-        _MenuCard(
-          color: HackerTonColors.pink,
-          title: '대화 도우미',
-          description: '어떻게 답변하면 좋을지 서포트 해줍니다',
-          buttonText: '도움 받기',
-          onPressed: () {},
-        ),
-      ],
-    );
-  }
-}
-
-class _MenuCard extends StatelessWidget {
-  final Color color;
-  final String title;
-  final String description;
-  final String buttonText;
-  final VoidCallback onPressed;
-
-  const _MenuCard({
-    super.key,
-    required this.color,
-    required this.title,
-    required this.description,
-    required this.buttonText,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 292,
-      height: 385,
-      padding: const EdgeInsets.symmetric(horizontal: 37, vertical: 44),
-      decoration: BoxDecoration(
-        color: HackerTonColors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset('assets/images/chat.svg', color: color),
-          const SizedBox(height: 32),
-          Text(title, style: HackerTonTypography.MainLarge),
-          const SizedBox(height: 10),
-          Text(
-            description,
-            style: HackerTonTypography.MainSmall,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 40),
-          _MainButton(
-            onPressed: onPressed,
-            backGroundColor: color,
-            content: buttonText,
-          ),
+    return Scaffold(
+      body: pages[index],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        onTap: (value) {
+          setState(() {
+            index = value;
+          });
+        },
+        currentIndex: index,
+        selectedItemColor: Colors.pink,
+        unselectedItemColor: Colors.grey,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: HackerTonIcon.robotIcon(), label: ''),
         ],
       ),
     );
   }
 }
 
-class _MainButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final Color backGroundColor;
-  final String content;
-
-  const _MainButton({
-    super.key,
-    required this.onPressed,
-    required this.backGroundColor,
-    required this.content,
-  });
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all(backGroundColor),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    var index = 0;
+
+    return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 59),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '반가워요 사용자 님',
+                    style: HackerTonTypography.MainLarge.copyWith(
+                      fontSize: 30,
+                    ),
+                  ),
+                  const SizedBox(height: 7),
+                  Text(
+                    '7일 전 분석보다 점수가 올랐어요',
+                    style: HackerTonTypography.MainSmall.copyWith(
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // 사용자 정보 카드
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 11),
+                    decoration: BoxDecoration(
+                      color: HackerTonColors.grey50,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/user_profile.svg',
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '서정현 / 18',
+                              style: HackerTonTypography.MainMedium.copyWith(
+                                fontSize: 20,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              '부산소프트웨어마이스터고등학교',
+                              style: HackerTonTypography.MainSmall.copyWith(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 19, vertical: 17),
+                      decoration: BoxDecoration(
+                        color: HackerTonColors.grey50,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/images/circle.svg',
+                              ),
+                              const SizedBox(width: 18),
+                              Column(children: [
+                                Text(
+                                  '사용자 님의 채팅 점수는',
+                                  style: HackerTonTypography.MainSmall.copyWith(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '72점 입니다',
+                                  style:
+                                      HackerTonTypography.MainMedium.copyWith(
+                                    fontSize: 24,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ])
+                            ],
+                          ),
+                        ],
+                      )),
+                  const SizedBox(height: 30),
+
+                  // 장점 섹션
+                  _buildBulletPoint(
+                    '추천해요',
+                    '+ 항상 존대말을 사용하시고 있어요',
+                    '+ 시간 등 약속 시간을 명확하게 표현하고 있어요',
+                  ),
+
+                  const SizedBox(
+                    height: 18,
+                  ),
+
+                  _buildBulletPoint(
+                    '개선하면 좋을 것 같아요',
+                    '- “아 그게...”로 시작하는 변명성 어투가 잦아요',
+                    '- "조금 더", "최대한 빨리" 등 추상적인 시간묘사가  많아요',
+                  ),
+
+                  const SizedBox(height: 14),
+                  // 사용자님이 자주 사용한 말투
+                  Text('사용자님이 자주 사용한 말투',
+                      style: HackerTonTypography.MainLarge.copyWith(
+                        fontSize: 16,
+                      )),
+                  const SizedBox(height: 20),
+                  _buildQuoteBox('"아~ 그게"'),
+                  const SizedBox(height: 9),
+                  _buildQuoteBox('"죄송합니다"'),
+                ],
+              ),
+            ),
           ),
-          minimumSize: WidgetStateProperty.all(Size(double.infinity, 52)),
-          elevation: WidgetStateProperty.all(0),
         ),
-        child: Text(
-          content,
-          style: HackerTonTypography.MainLarge.copyWith(
-            color: Colors.white,
-            fontSize: 18,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.push('/verify');
+          },
+          backgroundColor: Colors.transparent, // 필수. 기본 배경 제거
+          elevation: 6,
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: HackerTonGradients.orangeToPink,
+              shape: BoxShape.circle,
+            ),
+            child: Container(
+              width: 56, // FAB 기본 크기
+              height: 56, // FAB 기본 크기
+              alignment: Alignment.center,
+              child: const Icon(Icons.add, color: Colors.white),
+            ),
           ),
+        ));
+  }
+
+  Widget _buildBulletPoint(
+      String title, String recommended1, String recommended2) {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
         ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            title,
+            style: HackerTonTypography.MainLarge.copyWith(
+              fontSize: 15,
+              color: HackerTonColors.pink,
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            recommended1,
+            style: HackerTonTypography.MainSmall.copyWith(
+              fontSize: 12,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 9),
+          Text(
+            recommended2,
+            style: HackerTonTypography.MainSmall.copyWith(
+              fontSize: 12,
+              color: Colors.black,
+            ),
+          ),
+        ]));
+  }
+
+  Widget _buildQuoteBox(String text) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Align(
+        alignment: AlignmentGeometry.center,
+        child: Text(text,
+            style: HackerTonTypography.MainSmall.copyWith(
+              fontSize: 18,
+              color: Colors.black,
+            )),
       ),
     );
   }

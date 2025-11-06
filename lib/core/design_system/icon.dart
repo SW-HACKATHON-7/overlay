@@ -12,9 +12,8 @@ class HackerTonIcon {
         '$_basePath/10.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget best({double? width, double? height, Color? color}) =>
@@ -22,9 +21,8 @@ class HackerTonIcon {
         '$_basePath/8.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget blunder({double? width, double? height, Color? color}) =>
@@ -32,9 +30,8 @@ class HackerTonIcon {
         '$_basePath/1.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget chatIcon({double? width, double? height, Color? color}) =>
@@ -42,9 +39,8 @@ class HackerTonIcon {
         '$_basePath/chat_icon.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget chat({double? width, double? height, Color? color}) =>
@@ -52,9 +48,8 @@ class HackerTonIcon {
         '$_basePath/chat.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget distinguished({double? width, double? height, Color? color}) =>
@@ -62,9 +57,8 @@ class HackerTonIcon {
         '$_basePath/6.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget excellent({double? width, double? height, Color? color}) =>
@@ -72,9 +66,8 @@ class HackerTonIcon {
         '$_basePath/9.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget good({double? width, double? height, Color? color}) =>
@@ -82,9 +75,8 @@ class HackerTonIcon {
         '$_basePath/5.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget heartTalk({double? width, double? height, Color? color}) =>
@@ -92,9 +84,8 @@ class HackerTonIcon {
         '$_basePath/heart_talk.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget inaccurate({double? width, double? height, Color? color}) =>
@@ -102,9 +93,8 @@ class HackerTonIcon {
         '$_basePath/4.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget loadingIcon({double? width, double? height, Color? color}) =>
@@ -112,9 +102,8 @@ class HackerTonIcon {
         '$_basePath/loading_icon.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget logo({double? width, double? height, Color? color}) =>
@@ -122,9 +111,8 @@ class HackerTonIcon {
         '$_basePath/logo.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget mainLogo({double? width, double? height, Color? color}) =>
@@ -132,9 +120,8 @@ class HackerTonIcon {
         '$_basePath/main_logo.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget missedCount({double? width, double? height, Color? color}) =>
@@ -142,9 +129,8 @@ class HackerTonIcon {
         '$_basePath/2.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget mistake({double? width, double? height, Color? color}) =>
@@ -152,9 +138,8 @@ class HackerTonIcon {
         '$_basePath/3.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget talkIcon({double? width, double? height, Color? color}) =>
@@ -162,9 +147,8 @@ class HackerTonIcon {
         '$_basePath/talk_icon.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget theory({double? width, double? height, Color? color}) =>
@@ -172,9 +156,8 @@ class HackerTonIcon {
         '$_basePath/0.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
 
   static Widget uploadIcon({double? width, double? height, Color? color}) =>
@@ -182,8 +165,32 @@ class HackerTonIcon {
         '$_basePath/upload_icon.svg',
         width: width,
         height: height,
-        colorFilter: color != null
-            ? ColorFilter.mode(color, BlendMode.srcIn)
-            : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       );
+  static Widget robotIcon({double? width, double? height, Color? color}) =>
+      SvgPicture.asset(
+        '$_basePath/robot.svg',
+        width: width,
+        height: height,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
+      );
+
+  // Map 0-100 score to numbered icon 0..10.svg
+  static Widget appropriatenessScore(int score,
+          {double? width, double? height, Color? color}) =>
+      SvgPicture.asset(
+        '$_basePath/${_bucketFromScore(score)}.svg',
+        width: width,
+        height: height,
+        colorFilter:
+            color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
+      );
+
+  static int _bucketFromScore(int score) {
+    final int clamped = score.clamp(0, 100);
+    final int bucket = (clamped / 10).floor();
+    return bucket; // 0..10
+  }
 }

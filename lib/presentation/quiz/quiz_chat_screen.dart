@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/icon.dart';
 import 'package:hackerton/core/design_system/typography.dart';
-import 'package:hackerton/core/enum/feedback_enum.dart';
 import 'package:hackerton/core/widget/analyze_modal.dart';
 import 'package:hackerton/core/widget/back_appbar.dart';
 import 'package:hackerton/core/widget/base_scaffold.dart';
@@ -29,6 +28,8 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
     super.initState();
     // 화면 진입 시 대화 시작
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ensure clean state on enter
+      ref.read(quizChatNotifierProvider.notifier).resetState();
       ref
           .read(quizChatNotifierProvider.notifier)
           .startConversation(widget.relationship);
@@ -327,29 +328,8 @@ class _SendMessage extends StatelessWidget {
 
   const _SendMessage({required this.message});
 
-  Widget _getIcon(FeedbackIconType iconType) {
-    switch (iconType) {
-      case FeedbackIconType.best_excellent:
-        return HackerTonIcon.bestExcellent();
-      case FeedbackIconType.excellent:
-        return HackerTonIcon.excellent();
-      case FeedbackIconType.best:
-        return HackerTonIcon.best();
-      case FeedbackIconType.distinguished:
-        return HackerTonIcon.distinguished();
-      case FeedbackIconType.good:
-        return HackerTonIcon.good();
-      case FeedbackIconType.inaccurate:
-        return HackerTonIcon.inaccurate();
-      case FeedbackIconType.mistake:
-        return HackerTonIcon.mistake();
-      case FeedbackIconType.missed_count:
-        return HackerTonIcon.missedCount();
-      case FeedbackIconType.blunder:
-        return HackerTonIcon.blunder();
-      case FeedbackIconType.theory:
-        return HackerTonIcon.theory();
-    }
+  Widget _getIcon(int rating) {
+    return HackerTonIcon.appropriatenessScore(rating, width: 28, height: 28);
   }
 
   @override
@@ -373,7 +353,7 @@ class _SendMessage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (message.feedbackIcon != null)
+            if (message.score != null)
               Transform.translate(
                 offset: const Offset(-15, -15),
                 child: InkWell(
@@ -409,9 +389,9 @@ class _SendMessage extends StatelessWidget {
                         },
                       );
                     },
-                    child: _getIcon(message.feedbackIcon!)),
+                    child: _getIcon(message.impactScore!)),
               ),
-            if (message.feedbackIcon != null) const SizedBox(width: 3),
+            if (message.score != null) const SizedBox(width: 3),
             Flexible(
               child: Text(
                 message.text,

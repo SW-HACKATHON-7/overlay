@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/core/widget/base_scaffold.dart';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
-import 'package:hackerton/services/screenshot_service.dart';
 
 class ChoosePartnerScreen extends StatefulWidget {
   const ChoosePartnerScreen({super.key});
@@ -18,21 +16,7 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
   int? selectedIndex;
   bool isNavigating = false;
 
-  Future<void> _startOverlay() async {
-    // 오버레이 시작
-    await FlutterOverlayWindow.showOverlay(
-      alignment: OverlayAlignment.topCenter,
-      enableDrag: false,
-      overlayTitle: "대화 분석",
-      overlayContent: "대화 분석이 필요해요",
-      flag: OverlayFlag.focusPointer,
-      visibility: NotificationVisibility.visibilityPublic,
-      positionGravity: PositionGravity.none,
-      width: WindowSize.matchParent,
-      height: 800,
-      startPosition: const OverlayPosition(0, 0),
-    );
-  }
+  
 
   void _handleItemTap(int index) async {
     if (isNavigating) return;
@@ -65,7 +49,12 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     if (mounted) {
-      context.push('/quiz', extra: relationship);
+      await context.push('/quiz', extra: relationship);
+      if (!mounted) return;
+      setState(() {
+        selectedIndex = null;
+        isNavigating = false;
+      });
     }
   }
 

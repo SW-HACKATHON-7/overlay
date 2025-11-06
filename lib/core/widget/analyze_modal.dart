@@ -60,7 +60,10 @@ class AnalyzeModal extends StatelessWidget {
         child: Stack(
           children: [
             Container(
-              constraints: const BoxConstraints(maxWidth: 520),
+              constraints: BoxConstraints(
+                maxWidth: 520,
+                maxHeight: MediaQuery.of(context).size.height * 0.8,
+              ),
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
