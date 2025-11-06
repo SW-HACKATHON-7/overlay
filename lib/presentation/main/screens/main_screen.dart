@@ -5,6 +5,7 @@ import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/icon.dart';
 import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/presentation/choosePartner/choose_partner_screen.dart';
+import 'package:hackerton/presentation/history/history_screen.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class _MainScreenState extends State<MainScreen> {
   final pages = [
     HomeScreen(),
     ChoosePartnerScreen(),
+    HistoryScreen(),
   ];
 
   @override
@@ -36,6 +38,7 @@ class _MainScreenState extends State<MainScreen> {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
           BottomNavigationBarItem(icon: HackerTonIcon.robotIcon(), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: ''),
         ],
       ),
     );
