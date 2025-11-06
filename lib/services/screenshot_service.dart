@@ -97,4 +97,37 @@ class ScreenshotService {
       print('Error moving to background: $e');
     }
   }
+
+  /// 네이티브 마커 표시
+  static Future<bool> showMarkers(String markersJson) async {
+    try {
+      final bool result = await _channel.invokeMethod('showMarkers', {
+        'markers': markersJson,
+      });
+      return result;
+    } catch (e) {
+      print('Error showing markers: $e');
+      return false;
+    }
+  }
+
+  /// 네이티브 마커 제거
+  static Future<void> clearMarkers() async {
+    try {
+      await _channel.invokeMethod('clearMarkers');
+    } catch (e) {
+      print('Error clearing markers: $e');
+    }
+  }
+
+  /// 클릭된 마커 데이터 가져오기
+  static Future<String?> getMarkerClickData() async {
+    try {
+      final String? data = await _channel.invokeMethod('getMarkerClickData');
+      return data;
+    } catch (e) {
+      print('Error getting marker click data: $e');
+      return null;
+    }
+  }
 }

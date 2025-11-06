@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'core/router/route.dart';
+import 'data/dto/main_api_model.dart';
+import 'presentation/analysis_result/analysis_result_notifier.dart';
 import 'presentation/overlay/overlay_widget_new.dart';
 import 'services/screenshot_service.dart';
 
@@ -22,18 +26,19 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   static const String _kPortNameHome = 'UI';
   static const String _kPortNameOverlay = 'OVERLAY';
   final _receivePort = ReceivePort();
   SendPort? overlayPort;
+  final _routerKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
@@ -85,8 +90,118 @@ class _MyAppState extends State<MyApp> {
         // 오버레이에 중단 알림
         overlayPort ??= IsolateNameServer.lookupPortByName(_kPortNameOverlay);
         overlayPort?.send('STOPPED');
+      } else if (message == 'COMMAND:TAKE_SCREENSHOT') {
+        print('Taking screenshot for overlay...');
+
+        try {
+          // 단일 스크린샷 촬영
+          final screenshotPath = await ScreenshotService.takeScreenshot();
+
+          if (screenshotPath != null) {
+            print('Screenshot taken: $screenshotPath');
+            // 스크린샷 경로를 오버레이로 전송
+            overlayPort ??= IsolateNameServer.lookupPortByName(_kPortNameOverlay);
+            overlayPort?.send('SCREENSHOT:$screenshotPath');
+          } else {
+            print('Failed to take screenshot');
+          }
+        } catch (e) {
+          print('Error taking screenshot: $e');
+        }
+      } else if (message is String && message.startsWith('COMMAND:SHOW_MARKERS:')) {
+        print('Showing markers from main app...');
+
+        try {
+          // Extract JSON from command
+          final markersJson = message.substring('COMMAND:SHOW_MARKERS:'.length);
+          print('Markers JSON: $markersJson');
+
+          // Call native method to show markers
+          final success = await ScreenshotService.showMarkers(markersJson);
+          print('Native markers displayed: $success');
+
+          // Send success response back to overlay
+          overlayPort ??= IsolateNameServer.lookupPortByName(_kPortNameOverlay);
+          overlayPort?.send('MARKERS_SHOWN:$success');
+        } catch (e) {
+          print('Error showing markers: $e');
+          overlayPort ??= IsolateNameServer.lookupPortByName(_kPortNameOverlay);
+          overlayPort?.send('MARKERS_SHOWN:false');
+        }
+      } else if (message == 'COMMAND:CLEAR_MARKERS') {
+        print('Clearing markers from main app...');
+
+        try {
+          await ScreenshotService.clearMarkers();
+          print('Markers cleared');
+
+          overlayPort ??= IsolateNameServer.lookupPortByName(_kPortNameOverlay);
+          overlayPort?.send('MARKERS_CLEARED');
+        } catch (e) {
+          print('Error clearing markers: $e');
+        }
+      } else if (message is String && message.startsWith('{')) {
+        // JSON 데이터 (분석 결과)
+        try {
+          final data = jsonDecode(message) as Map<String, dynamic>;
+          if (data['action'] == 'ANALYSIS_COMPLETE') {
+            print('받은 분석 결과 처리 중...');
+            _handleAnalysisResult(data);
+          }
+        } catch (e) {
+          print('Error parsing analysis result: $e');
+        }
       }
     });
+  }
+
+  void _handleAnalysisResult(Map<String, dynamic> data) {
+    try {
+      final sessionId = data['sessionId'] as String?;
+      final relationship = data['relationship'] as String? ?? 'FRIEND';
+      final messagesData = data['messages'] as List<dynamic>;
+
+      // MessageDetail 리스트로 변환
+      final messages = messagesData.map((msgData) {
+        final msgMap = msgData as Map<String, dynamic>;
+        final posMap = msgMap['position'] as Map<String, dynamic>;
+
+        return MessageDetail(
+          messageId: msgMap['messageId'] as String,
+          text: msgMap['text'] as String,
+          speaker: msgMap['speaker'] as String,
+          confidence: (msgMap['confidence'] as num).toDouble(),
+          position: MessagePosition(
+            x: (posMap['x'] as num).toDouble(),
+            y: (posMap['y'] as num).toDouble(),
+            width: (posMap['width'] as num).toDouble(),
+            height: (posMap['height'] as num).toDouble(),
+          ),
+          groupId: msgMap['groupId'] as int,
+          score: msgMap['score'] != null ? (msgMap['score'] as num).toDouble() : null,
+          emotionalTone: msgMap['emotionalTone'] as String?,
+          impactScore: msgMap['impactScore'] != null ? (msgMap['impactScore'] as num).toDouble() : null,
+          aiMessage: msgMap['aiMessage'] as String?,
+          suggestedAlternative: msgMap['suggestedAlternative'] as String?,
+        );
+      }).toList();
+
+      // Provider에 저장
+      ref.read(analysisResultNotifierProvider.notifier).setAnalysisResult(
+            messages: messages,
+            relationship: relationship,
+            sessionId: sessionId,
+          );
+
+      // 분석 결과 화면으로 이동
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        router.go('/analysis_result');
+      });
+
+      print('분석 결과 저장 및 화면 이동 완료');
+    } catch (e) {
+      print('Error handling analysis result: $e');
+    }
   }
 
   @override
