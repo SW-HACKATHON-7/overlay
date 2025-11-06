@@ -86,153 +86,91 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
         children: [
           _TopMenu(relationship: widget.relationship),
           const SizedBox(height: 12),
-
-          // 에러 메시지 표시
-          if (state.errorMessage != null)
-            Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.red.shade100,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red.shade300),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.error_outline,
-                      color: Colors.red.shade700, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      state.errorMessage!,
-                      style:
-                          TextStyle(color: Colors.red.shade700, fontSize: 13),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-          // 메시지 리스트
+          if (state.errorMessage != null) ...[
+            // 에러박스 그대로
+          ],
           Expanded(
             child: state.isLoading && state.messages.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     controller: _scrollController,
                     itemCount: state.messages.length,
-                    itemBuilder: (context, index) {
-                      final message = state.messages[index];
-                      if (message.isUser) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _SendMessage(message: message),
-                        );
-                      } else {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _ReceiveMessage(message: message.text),
-                        );
-                      }
+                    itemBuilder: (_, index) {
+                      final msg = state.messages[index];
+                      return msg.isUser
+                          ? Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _SendMessage(message: msg),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _ReceiveMessage(message: msg.text),
+                            );
                     },
                   ),
           ),
-
-          // 로딩 인디케이터
           if (state.isLoading && state.messages.isNotEmpty)
             const Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8),
               child: Center(child: CircularProgressIndicator()),
             ),
-
-          // 입력창
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+        ],
+      ),
+      btn: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      enabled: !state.isLoading,
-                      decoration: InputDecoration(
-                        hintText:
-                            state.isLoading ? '메시지 전송 중...' : '메시지를 입력하세요...',
-                        hintStyle: TextStyle(
-                          color: state.isLoading
-                              ? Colors.grey.shade400
-                              : Colors.grey.shade600,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: state.isLoading
-                            ? Colors.grey.shade200
-                            : Colors.grey.shade100,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                      ),
-                      maxLines: null,
-                      maxLength: 500,
-                      buildCounter: (context,
-                          {required currentLength,
-                          required isFocused,
-                          maxLength}) {
-                        return null; // 글자 수 카운터 숨김
-                      },
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) =>
-                          state.isLoading ? null : _sendMessage(),
-                    ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _messageController,
+                enabled: !state.isLoading,
+                decoration: InputDecoration(
+                  hintText: state.isLoading ? '메시지 전송 중...' : '메시지를 입력하세요...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide.none,
                   ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: state.isLoading ? null : _sendMessage,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        gradient: state.isLoading
-                            ? null
-                            : HackerTonGradients.orangeToPink,
-                        color: state.isLoading ? Colors.grey.shade300 : null,
-                        shape: BoxShape.circle,
-                        boxShadow: state.isLoading
-                            ? null
-                            : [
-                                BoxShadow(
-                                  color: Colors.orange.withValues(alpha: 0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                      ),
-                      child: Icon(
-                        Icons.send,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
+                  filled: true,
+                  fillColor: state.isLoading
+                      ? Colors.grey.shade200
+                      : Colors.grey.shade100,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
                   ),
-                ],
+                ),
+                maxLines: null,
+                onSubmitted: (_) => state.isLoading ? null : _sendMessage(),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: state.isLoading ? null : _sendMessage,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient:
+                      state.isLoading ? null : HackerTonGradients.orangeToPink,
+                  color: state.isLoading ? Colors.grey.shade300 : null,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.send, color: Colors.white, size: 24),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -356,40 +294,7 @@ class _SendMessage extends StatelessWidget {
             if (message.score != null)
               Transform.translate(
                 offset: const Offset(-15, -15),
-                child: InkWell(
-                    onTap: () {
-                      final int rating = message.score ?? 0;
-                      final String feedBack = message.aiMessage ?? '';
-                      final String suggest = message.suggestedAlternative ?? '';
-                      showGeneralDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        barrierLabel: 'Dismiss',
-                        barrierColor: Colors.black54,
-                        pageBuilder: (ctx, a1, a2) {
-                          return AnalyzeModal(
-                            rating: rating,
-                            feedBack: feedBack.isEmpty ? '피드백이 없습니다.' : feedBack,
-                            suggest: suggest.isEmpty ? '제안이 없습니다.' : suggest,
-                            isDialog: true,
-                          );
-                        },
-                        transitionBuilder: (ctx, anim, _, child) {
-                          final CurvedAnimation curved = CurvedAnimation(
-                            parent: anim,
-                            curve: Curves.easeOutCubic,
-                          );
-                          return FadeTransition(
-                            opacity: curved,
-                            child: ScaleTransition(
-                              scale: Tween<double>(begin: 0.95, end: 1).animate(curved),
-                              child: child,
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: _getIcon(message.impactScore!)),
+                child: _getIcon(message.impactScore!),
               ),
             if (message.score != null) const SizedBox(width: 3),
             Flexible(

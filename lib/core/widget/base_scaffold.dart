@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class BaseScaffold extends StatelessWidget {
   final Widget body;
   final PreferredSizeWidget? appBar;
+  final Widget? btn;
   final bool resizeToAvoidBottomInset;
 
   const BaseScaffold({
     super.key,
     required this.body,
     this.appBar,
+    this.btn,
     this.resizeToAvoidBottomInset = false,
   });
 
@@ -24,6 +26,7 @@ class BaseScaffold extends StatelessWidget {
           child: body,
         ),
       ),
+      bottomNavigationBar: btn,
     );
   }
 }
