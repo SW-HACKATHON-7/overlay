@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/core/widget/base_scaffold.dart';
@@ -40,14 +41,30 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
       isNavigating = true;
     });
 
-    await Future.delayed(const Duration(seconds: 2));
+    // 선택한 관계에 따라 퀴즈 화면으로 이동
+    String relationship = '';
+    switch (index) {
+      case 0:
+        relationship = '직장 상사';
+        break;
+      case 1:
+        relationship = '직장 동료';
+        break;
+      case 2:
+        relationship = '부하 직원';
+        break;
+      case 3:
+        relationship = '친구';
+        break;
+      case 4:
+        relationship = '연인';
+        break;
+    }
+
+    await Future.delayed(const Duration(milliseconds: 300));
 
     if (mounted) {
-      // 오버레이 시작
-      await _startOverlay();
-
-      // 오버레이가 성공적으로 표시되면 앱을 백그라운드로 이동 (시스템 홈 화면)
-      await ScreenshotService.moveToBackground();
+      context.go('/quiz', extra: relationship);
     }
   }
 
