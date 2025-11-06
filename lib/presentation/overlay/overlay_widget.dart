@@ -1,8 +1,6 @@
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:hackerton/core/design_system/color.dart';
-import 'package:hackerton/core/design_system/typography.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 enum OverlayState {
@@ -401,28 +399,29 @@ class _OverlayWidgetState extends State<OverlayWidget> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            _buildAnalysisItem(
-              icon: '??',
-              iconColor: Color(0xFFFF6B6B),
-              title: '불편더',
-              description: '네 그래서 어제 올리긴 못했죠',
-            ),
-            const SizedBox(height: 12),
-            _buildAnalysisItem(
-              icon: '−',
-              iconColor: Color(0xFFD4A574),
-              title: '피드백',
-              description: '이 답변 이후 분위기가 안 좋아졌어요\n다소 공격적으로 들릴 수 있어요',
-            ),
-            const SizedBox(height: 12),
-            _buildAnalysisItem(
-              icon: '!!',
-              iconColor: Color(0xFF4CAF50),
-              title: '모범 답안',
-              description: '"그 부분이 조금 의아했는데, 네 생각을 좀 더 듣고 싶어요"\n라고 말했으면 좋았을 것 같아요',
-            ),
-            const SizedBox(height: 16),
-            Container(
+          _buildAnalysisItem(
+            icon: '??',
+            iconColor: Color(0xFFFF6B6B),
+            title: '불편더',
+            description: '네 그래서 어제 올리긴 못했죠',
+          ),
+          const SizedBox(height: 12),
+          _buildAnalysisItem(
+            icon: '−',
+            iconColor: Color(0xFFD4A574),
+            title: '피드백',
+            description: '이 답변 이후 분위기가 안 좋아졌어요\n다소 공격적으로 들릴 수 있어요',
+          ),
+          const SizedBox(height: 12),
+          _buildAnalysisItem(
+            icon: '!!',
+            iconColor: Color(0xFF4CAF50),
+            title: '모범 답안',
+            description:
+                '"그 부분이 조금 의아했는데, 네 생각을 좀 더 듣고 싶어요"\n라고 말했으면 좋았을 것 같아요',
+          ),
+          const SizedBox(height: 16),
+          Container(
             width: double.infinity,
             height: 52,
             decoration: BoxDecoration(
