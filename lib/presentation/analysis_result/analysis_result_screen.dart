@@ -15,7 +15,8 @@ class AnalysisResultScreen extends ConsumerStatefulWidget {
   const AnalysisResultScreen({super.key});
 
   @override
-  ConsumerState<AnalysisResultScreen> createState() => _AnalysisResultScreenState();
+  ConsumerState<AnalysisResultScreen> createState() =>
+      _AnalysisResultScreenState();
 }
 
 class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
@@ -95,7 +96,7 @@ class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
 
           // 분석 완료하기 버튼
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -106,31 +107,29 @@ class _AnalysisResultScreenState extends ConsumerState<AnalysisResultScreen> {
                 ),
               ],
             ),
-            child: SafeArea(
-              child: GestureDetector(
-                onTap: _onComplete,
-                child: Container(
-                  width: double.infinity,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    gradient: HackerTonGradients.orangeToPink,
-                    borderRadius: BorderRadius.circular(26),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.orange.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '분석 완료하기',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+            child: GestureDetector(
+              onTap: _onComplete,
+              child: Container(
+                width: double.infinity,
+                height: 52,
+                decoration: BoxDecoration(
+                  gradient: HackerTonGradients.orangeToPink,
+                  borderRadius: BorderRadius.circular(26),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    '분석 완료하기',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -275,7 +274,8 @@ class _SendMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final feedbackIcon = message.score != null ? _getFeedbackIcon(message.score) : null;
+    final feedbackIcon =
+        message.score != null ? _getFeedbackIcon(message.score) : null;
 
     return Align(
       alignment: Alignment.centerRight,
@@ -312,7 +312,8 @@ class _SendMessage extends StatelessWidget {
                         pageBuilder: (ctx, a1, a2) {
                           return AnalyzeModal(
                             rating: rating,
-                            feedBack: feedBack.isEmpty ? '피드백이 없습니다.' : feedBack,
+                            feedBack:
+                                feedBack.isEmpty ? '피드백이 없습니다.' : feedBack,
                             suggest: suggest.isEmpty ? '제안이 없습니다.' : suggest,
                             isDialog: true,
                           );
@@ -325,7 +326,8 @@ class _SendMessage extends StatelessWidget {
                           return FadeTransition(
                             opacity: curved,
                             child: ScaleTransition(
-                              scale: Tween<double>(begin: 0.95, end: 1).animate(curved),
+                              scale: Tween<double>(begin: 0.95, end: 1)
+                                  .animate(curved),
                               child: child,
                             ),
                           );
