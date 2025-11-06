@@ -142,14 +142,20 @@ class _MyAppState extends ConsumerState<MyApp> {
         }
       } else if (message is String && message.startsWith('{')) {
         // JSON 데이터 (분석 결과)
+        print('=== JSON 메시지 수신 ===');
+        print('메시지 길이: ${message.length}');
+        print('메시지 시작: ${message.substring(0, message.length > 100 ? 100 : message.length)}...');
         try {
           final data = jsonDecode(message) as Map<String, dynamic>;
+          print('JSON 파싱 성공');
+          print('Action: ${data['action']}');
           if (data['action'] == 'ANALYSIS_COMPLETE') {
-            print('받은 분석 결과 처리 중...');
+            print('분석 완료 액션 확인됨 - 처리 시작...');
             _handleAnalysisResult(data);
           }
         } catch (e) {
-          print('Error parsing analysis result: $e');
+          print('❌ Error parsing analysis result: $e');
+          print('Stack trace: ${StackTrace.current}');
         }
       }
     });
@@ -157,9 +163,14 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   void _handleAnalysisResult(Map<String, dynamic> data) {
     try {
+      print('_handleAnalysisResult 시작');
       final sessionId = data['sessionId'] as String?;
       final relationship = data['relationship'] as String? ?? 'FRIEND';
       final messagesData = data['messages'] as List<dynamic>;
+
+      print('Session ID: $sessionId');
+      print('Relationship: $relationship');
+      print('Messages count: ${messagesData.length}');
 
       // MessageDetail 리스트로 변환
       final messages = messagesData.map((msgData) {
@@ -186,21 +197,29 @@ class _MyAppState extends ConsumerState<MyApp> {
         );
       }).toList();
 
+      print('메시지 변환 완료: ${messages.length}개');
+
       // Provider에 저장
+      print('Provider에 저장 시작...');
       ref.read(analysisResultNotifierProvider.notifier).setAnalysisResult(
             messages: messages,
             relationship: relationship,
             sessionId: sessionId,
           );
+      print('Provider 저장 완료');
 
-      // 분석 결과 화면으로 이동
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 분석 결과 화면으로 이동 (바로 호출)
+      print('화면 이동 시작...');
+      Future.delayed(Duration.zero, () {
+        print('Future.delayed 실행 - router.go 호출');
         router.go('/analysis_result');
+        print('router.go 완료');
       });
 
-      print('분석 결과 저장 및 화면 이동 완료');
-    } catch (e) {
-      print('Error handling analysis result: $e');
+      print('✓ 분석 결과 저장 및 화면 이동 스케줄링 완료');
+    } catch (e, stackTrace) {
+      print('❌ Error handling analysis result: $e');
+      print('Stack trace: $stackTrace');
     }
   }
 

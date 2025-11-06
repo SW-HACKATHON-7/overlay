@@ -81,6 +81,9 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
 
   /// 분석 결과를 메인 앱으로 전달
   void _sendAnalysisResultToMainApp(ViewResponse viewResponse) {
+    print('=== _sendAnalysisResultToMainApp 시작 ===');
+    print('전달할 메시지 수: ${viewResponse.messages.length}');
+
     final resultData = {
       'action': 'ANALYSIS_COMPLETE',
       'sessionId': _analysisService.currentSessionId,
@@ -107,9 +110,19 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
       }).toList(),
     };
 
+    final jsonString = jsonEncode(resultData);
+    print('JSON 문자열 길이: ${jsonString.length}');
+    print('JSON 시작: ${jsonString.substring(0, jsonString.length > 200 ? 200 : jsonString.length)}...');
+
     homePort ??= IsolateNameServer.lookupPortByName(_kPortNameHome);
-    homePort?.send(jsonEncode(resultData));
-    print('분석 결과를 메인 앱으로 전달했습니다: ${viewResponse.messages.length}개 메시지');
+    print('HomePort 조회: ${homePort != null ? "성공" : "실패"}');
+
+    if (homePort != null) {
+      homePort!.send(jsonString);
+      print('✓ JSON 데이터 전송 완료: ${viewResponse.messages.length}개 메시지');
+    } else {
+      print('❌ HomePort가 null입니다 - 메시지 전송 실패');
+    }
   }
 
 
@@ -175,10 +188,15 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
 
       // 4. 상세 분석 결과 조회 (마지막 스크린샷으로 view 호출)
       print('상세 분석 결과 조회 중...');
+      print('마지막 스크린샷 경로: ${paths.last}');
       final viewResponse = await _analysisService.viewByCurrentScreenshot(paths.last);
 
       if (viewResponse == null || viewResponse.messages.isEmpty) {
-        print('상세 분석 결과 조회 실패');
+        print('⚠️ 상세 분석 결과 조회 실패 또는 메시지 없음');
+        print('ViewResponse null: ${viewResponse == null}');
+        if (viewResponse != null) {
+          print('Messages empty: ${viewResponse.messages.isEmpty}');
+        }
         setState(() {
           currentState = OverlayState.needAnalysis;
         });
@@ -186,12 +204,20 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
       }
 
       print('✓ 상세 결과 조회 완료: ${viewResponse.messages.length}개 메시지');
+      print('메시지 상세:');
+      for (var msg in viewResponse.messages) {
+        print('  - ${msg.speaker}: ${msg.text.substring(0, msg.text.length > 30 ? 30 : msg.text.length)}... (score: ${msg.score})');
+      }
 
-      // 5. 분석 완료 - 메인 앱으로 데이터 전달 후 오버레이 닫기
+      // 5. 분석 완료 - 메인 앱으로 데이터 전달
+      print('메인 앱으로 분석 결과 전달 중...');
       _sendAnalysisResultToMainApp(viewResponse);
+      print('✓ 메인 앱으로 데이터 전송 완료');
 
-      // 잠시 대기 후 오버레이 닫기
-      await Future.delayed(const Duration(milliseconds: 500));
+      // 메시지 전달을 위해 충분히 대기 후 오버레이 닫기
+      print('오버레이 닫기 전 대기 중...');
+      await Future.delayed(const Duration(seconds: 2));
+      print('오버레이 닫기 시작');
       FlutterOverlayWindow.closeOverlay();
     } catch (e) {
       print('Error processing screenshots: $e');
