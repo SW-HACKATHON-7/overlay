@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/core/widget/base_scaffold.dart';
@@ -20,6 +21,7 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
   Future<void> _startOverlay() async {
     // 오버레이 시작
     await FlutterOverlayWindow.showOverlay(
+      alignment: OverlayAlignment.topCenter,
       enableDrag: false,
       overlayTitle: "대화 분석",
       overlayContent: "대화 분석이 필요해요",
@@ -40,14 +42,30 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
       isNavigating = true;
     });
 
-    await Future.delayed(const Duration(seconds: 2));
+    // 선택한 관계에 따라 퀴즈 화면으로 이동
+    String relationship = '';
+    switch (index) {
+      case 0:
+        relationship = '직장 상사';
+        break;
+      case 1:
+        relationship = '직장 동료';
+        break;
+      case 2:
+        relationship = '부하 직원';
+        break;
+      case 3:
+        relationship = '친구';
+        break;
+      case 4:
+        relationship = '연인';
+        break;
+    }
+
+    await Future.delayed(const Duration(milliseconds: 300));
 
     if (mounted) {
-      // 오버레이 시작
-      await _startOverlay();
-
-      // 오버레이가 성공적으로 표시되면 앱을 백그라운드로 이동 (시스템 홈 화면)
-      await ScreenshotService.moveToBackground();
+      context.go('/quiz', extra: relationship);
     }
   }
 
@@ -160,7 +178,7 @@ class ConversationStyleItem extends StatelessWidget {
             color: isSelected ? null : HackerTonColors.white,
             borderRadius: BorderRadius.circular(8),
           ),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Opacity(
             opacity: isDisabled ? 0.5 : 1.0,
             child: Row(
@@ -187,13 +205,15 @@ class ConversationStyleItem extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: HackerTonTypography.MainSmall.copyWith(
-                        fontSize: 14,
-                        color: isSelected
-                            ? Colors.white
-                            : HackerTonColors.grey200,
+                    Flexible(
+                      child: Text(
+                        description,
+                        style: HackerTonTypography.MainSmall.copyWith(
+                          fontSize: 14,
+                          color: isSelected
+                              ? Colors.white
+                              : HackerTonColors.grey200,
+                        ),
                       ),
                     ),
                   ],

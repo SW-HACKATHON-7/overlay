@@ -126,3 +126,181 @@ Map<String, dynamic> _$SearchResponseToJson(SearchResponse instance) =>
       'message': instance.message,
       'results': instance.results,
     };
+
+MessageDetail _$MessageDetailFromJson(Map<String, dynamic> json) =>
+    MessageDetail(
+      messageId: json['message_id'] as String,
+      text: json['text'] as String,
+      speaker: json['speaker'] as String,
+      confidence: (json['confidence'] as num).toDouble(),
+      position:
+          MessagePosition.fromJson(json['position'] as Map<String, dynamic>),
+      groupId: (json['group_id'] as num).toInt(),
+      score: (json['score'] as num?)?.toDouble(),
+      emotionalTone: json['emotional_tone'] as String?,
+      impactScore: (json['impact_score'] as num?)?.toDouble(),
+      aiMessage: json['ai_message'] as String?,
+      suggestedAlternative: json['suggested_alternative'] as String?,
+    );
+
+Map<String, dynamic> _$MessageDetailToJson(MessageDetail instance) =>
+    <String, dynamic>{
+      'message_id': instance.messageId,
+      'text': instance.text,
+      'speaker': instance.speaker,
+      'confidence': instance.confidence,
+      'position': instance.position,
+      'group_id': instance.groupId,
+      'score': instance.score,
+      'emotional_tone': instance.emotionalTone,
+      'impact_score': instance.impactScore,
+      'ai_message': instance.aiMessage,
+      'suggested_alternative': instance.suggestedAlternative,
+    };
+
+MessagePosition _$MessagePositionFromJson(Map<String, dynamic> json) =>
+    MessagePosition(
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+      width: (json['width'] as num).toDouble(),
+      height: (json['height'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$MessagePositionToJson(MessagePosition instance) =>
+    <String, dynamic>{
+      'x': instance.x,
+      'y': instance.y,
+      'width': instance.width,
+      'height': instance.height,
+    };
+
+ViewResponse _$ViewResponseFromJson(Map<String, dynamic> json) => ViewResponse(
+      sessionId: json['session_id'] as String,
+      matched: json['matched'] as bool,
+      totalMatched: (json['total_matched'] as num).toInt(),
+      totalOcrExtracted: (json['total_ocr_extracted'] as num).toInt(),
+      messages: (json['messages'] as List<dynamic>)
+          .map((e) => MessageDetail.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ViewResponseToJson(ViewResponse instance) =>
+    <String, dynamic>{
+      'session_id': instance.sessionId,
+      'matched': instance.matched,
+      'total_matched': instance.totalMatched,
+      'total_ocr_extracted': instance.totalOcrExtracted,
+      'messages': instance.messages,
+    };
+
+MessageSuggestion _$MessageSuggestionFromJson(Map<String, dynamic> json) =>
+    MessageSuggestion(
+      style: json['style'] as String,
+      text: json['text'] as String,
+      expectedImpact: (json['expected_impact'] as num).toInt(),
+      explanation: json['explanation'] as String,
+    );
+
+Map<String, dynamic> _$MessageSuggestionToJson(MessageSuggestion instance) =>
+    <String, dynamic>{
+      'style': instance.style,
+      'text': instance.text,
+      'expected_impact': instance.expectedImpact,
+      'explanation': instance.explanation,
+    };
+
+PredictNextResponse _$PredictNextResponseFromJson(Map<String, dynamic> json) =>
+    PredictNextResponse(
+      sessionId: json['session_id'] as String,
+      relationship: json['relationship'] as String,
+      relationshipInfo: json['relationship_info'] as String,
+      totalMessages: (json['total_messages'] as num).toInt(),
+      suggestions: (json['suggestions'] as List<dynamic>)
+          .map((e) => MessageSuggestion.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$PredictNextResponseToJson(
+        PredictNextResponse instance) =>
+    <String, dynamic>{
+      'session_id': instance.sessionId,
+      'relationship': instance.relationship,
+      'relationship_info': instance.relationshipInfo,
+      'total_messages': instance.totalMessages,
+      'suggestions': instance.suggestions,
+    };
+
+StartConversationRequest _$StartConversationRequestFromJson(
+        Map<String, dynamic> json) =>
+    StartConversationRequest(
+      relationship: json['relationship'] as String,
+    );
+
+Map<String, dynamic> _$StartConversationRequestToJson(
+        StartConversationRequest instance) =>
+    <String, dynamic>{
+      'relationship': instance.relationship,
+    };
+
+StartConversationResponse _$StartConversationResponseFromJson(
+        Map<String, dynamic> json) =>
+    StartConversationResponse(
+      message: json['message'] as String,
+      threadId: json['thread_id'] as String,
+    );
+
+Map<String, dynamic> _$StartConversationResponseToJson(
+        StartConversationResponse instance) =>
+    <String, dynamic>{
+      'message': instance.message,
+      'thread_id': instance.threadId,
+    };
+
+ContinueConversationRequest _$ContinueConversationRequestFromJson(
+        Map<String, dynamic> json) =>
+    ContinueConversationRequest(
+      message: json['message'] as String,
+      threadId: json['thread_id'] as String,
+    );
+
+Map<String, dynamic> _$ContinueConversationRequestToJson(
+        ContinueConversationRequest instance) =>
+    <String, dynamic>{
+      'message': instance.message,
+      'thread_id': instance.threadId,
+    };
+
+ConversationResponse _$ConversationResponseFromJson(
+        Map<String, dynamic> json) =>
+    ConversationResponse(
+      emotionalTone: json['emotional_tone'] as String,
+      appropriatenessRating: (json['appropriateness_rating'] as num).toInt(),
+      impactScore: (json['impact_score'] as num).toInt(),
+      reviewComment: json['review_comment'] as String,
+      suggestedAlternative: json['suggested_alternative'] as String,
+    );
+
+Map<String, dynamic> _$ConversationResponseToJson(
+        ConversationResponse instance) =>
+    <String, dynamic>{
+      'emotional_tone': instance.emotionalTone,
+      'appropriateness_rating': instance.appropriatenessRating,
+      'impact_score': instance.impactScore,
+      'review_comment': instance.reviewComment,
+      'suggested_alternative': instance.suggestedAlternative,
+    };
+
+ContinueConversationResponse _$ContinueConversationResponseFromJson(
+        Map<String, dynamic> json) =>
+    ContinueConversationResponse(
+      message: json['message'] as String,
+      response: ConversationResponse.fromJson(
+          json['response'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$ContinueConversationResponseToJson(
+        ContinueConversationResponse instance) =>
+    <String, dynamic>{
+      'message': instance.message,
+      'response': instance.response,
+    };

@@ -143,3 +143,207 @@ class SearchResponse {
       _$SearchResponseFromJson(json);
   Map<String, dynamic> toJson() => _$SearchResponseToJson(this);
 }
+
+// 6. 스크린샷으로 분석 결과 조회 응답
+@JsonSerializable()
+class MessageDetail {
+  @JsonKey(name: "message_id")
+  final String messageId;
+  final String text;
+  final String speaker;
+  final double confidence;
+  final MessagePosition position;
+  @JsonKey(name: "group_id")
+  final int groupId;
+  final double? score;
+  @JsonKey(name: "emotional_tone")
+  final String? emotionalTone;
+  @JsonKey(name: "impact_score")
+  final double? impactScore;
+  @JsonKey(name: "ai_message")
+  final String? aiMessage;
+  @JsonKey(name: "suggested_alternative")
+  final String? suggestedAlternative;
+
+  MessageDetail({
+    required this.messageId,
+    required this.text,
+    required this.speaker,
+    required this.confidence,
+    required this.position,
+    required this.groupId,
+    this.score,
+    this.emotionalTone,
+    this.impactScore,
+    this.aiMessage,
+    this.suggestedAlternative,
+  });
+  factory MessageDetail.fromJson(Map<String, dynamic> json) =>
+      _$MessageDetailFromJson(json);
+  Map<String, dynamic> toJson() => _$MessageDetailToJson(this);
+}
+
+@JsonSerializable()
+class MessagePosition {
+  final double x;
+  final double y;
+  final double width;
+  final double height;
+
+  MessagePosition({
+    required this.x,
+    required this.y,
+    required this.width,
+    required this.height,
+  });
+  factory MessagePosition.fromJson(Map<String, dynamic> json) =>
+      _$MessagePositionFromJson(json);
+  Map<String, dynamic> toJson() => _$MessagePositionToJson(this);
+}
+
+@JsonSerializable()
+class ViewResponse {
+  @JsonKey(name: "session_id")
+  final String sessionId;
+  final bool matched;
+  @JsonKey(name: "total_matched")
+  final int totalMatched;
+  @JsonKey(name: "total_ocr_extracted")
+  final int totalOcrExtracted;
+  final List<MessageDetail> messages;
+
+  ViewResponse({
+    required this.sessionId,
+    required this.matched,
+    required this.totalMatched,
+    required this.totalOcrExtracted,
+    required this.messages,
+  });
+  factory ViewResponse.fromJson(Map<String, dynamic> json) =>
+      _$ViewResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$ViewResponseToJson(this);
+}
+
+// 7. 다음 대화 예측 응답
+@JsonSerializable()
+class MessageSuggestion {
+  final String style;
+  final String text;
+  @JsonKey(name: "expected_impact")
+  final int expectedImpact;
+  final String explanation;
+
+  MessageSuggestion({
+    required this.style,
+    required this.text,
+    required this.expectedImpact,
+    required this.explanation,
+  });
+  factory MessageSuggestion.fromJson(Map<String, dynamic> json) =>
+      _$MessageSuggestionFromJson(json);
+  Map<String, dynamic> toJson() => _$MessageSuggestionToJson(this);
+}
+
+@JsonSerializable()
+class PredictNextResponse {
+  @JsonKey(name: "session_id")
+  final String sessionId;
+  final String relationship;
+  @JsonKey(name: "relationship_info")
+  final String relationshipInfo;
+  @JsonKey(name: "total_messages")
+  final int totalMessages;
+  final List<MessageSuggestion> suggestions;
+
+  PredictNextResponse({
+    required this.sessionId,
+    required this.relationship,
+    required this.relationshipInfo,
+    required this.totalMessages,
+    required this.suggestions,
+  });
+  factory PredictNextResponse.fromJson(Map<String, dynamic> json) =>
+      _$PredictNextResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$PredictNextResponseToJson(this);
+}
+
+// 8. 대화 시작 응답
+@JsonSerializable()
+class StartConversationRequest {
+  final String relationship;
+
+  StartConversationRequest({required this.relationship});
+  factory StartConversationRequest.fromJson(Map<String, dynamic> json) =>
+      _$StartConversationRequestFromJson(json);
+  Map<String, dynamic> toJson() => _$StartConversationRequestToJson(this);
+}
+
+@JsonSerializable()
+class StartConversationResponse {
+  final String message;
+  @JsonKey(name: "thread_id")
+  final String threadId;
+
+  StartConversationResponse({
+    required this.message,
+    required this.threadId,
+  });
+  factory StartConversationResponse.fromJson(Map<String, dynamic> json) =>
+      _$StartConversationResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$StartConversationResponseToJson(this);
+}
+
+// 9. 대화 이어가기 요청/응답
+@JsonSerializable()
+class ContinueConversationRequest {
+  final String message;
+  @JsonKey(name: "thread_id")
+  final String threadId;
+
+  ContinueConversationRequest({
+    required this.message,
+    required this.threadId,
+  });
+  factory ContinueConversationRequest.fromJson(Map<String, dynamic> json) =>
+      _$ContinueConversationRequestFromJson(json);
+  Map<String, dynamic> toJson() => _$ContinueConversationRequestToJson(this);
+}
+
+@JsonSerializable()
+class ConversationResponse {
+  @JsonKey(name: "emotional_tone")
+  final String emotionalTone;
+  @JsonKey(name: "appropriateness_rating")
+  final int appropriatenessRating;
+  @JsonKey(name: "impact_score")
+  final int impactScore;
+  @JsonKey(name: "review_comment")
+  final String reviewComment;
+  @JsonKey(name: "suggested_alternative")
+  final String suggestedAlternative;
+
+  ConversationResponse({
+    required this.emotionalTone,
+    required this.appropriatenessRating,
+    required this.impactScore,
+    required this.reviewComment,
+    required this.suggestedAlternative,
+  });
+  factory ConversationResponse.fromJson(Map<String, dynamic> json) =>
+      _$ConversationResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$ConversationResponseToJson(this);
+}
+
+@JsonSerializable()
+class ContinueConversationResponse {
+  final String message;
+  final ConversationResponse response;
+
+  ContinueConversationResponse({
+    required this.message,
+    required this.response,
+  });
+  factory ContinueConversationResponse.fromJson(Map<String, dynamic> json) =>
+      _$ContinueConversationResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$ContinueConversationResponseToJson(this);
+}
