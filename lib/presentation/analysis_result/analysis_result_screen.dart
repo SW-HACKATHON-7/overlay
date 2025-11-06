@@ -152,14 +152,19 @@ class _TopMenu extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          relationship,
-          style: HackerTonTypography.MainLarge.copyWith(
-            color: Colors.black,
-            fontSize: 20,
+        if (relationship != "")
+          Column(
+            children: [
+              Text(
+                relationship,
+                style: HackerTonTypography.MainLarge.copyWith(
+                  color: Colors.black,
+                  fontSize: 20,
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
           ),
-        ),
-        const SizedBox(height: 12),
         Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
