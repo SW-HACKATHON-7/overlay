@@ -6,8 +6,8 @@ class DioClient {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: 'http://3.239.81.172', // 2. 명세서의 Base URL
-      connectTimeout: Duration(seconds: 5), // 5초
-      receiveTimeout: Duration(seconds: 3), // 3초
+      connectTimeout: Duration(seconds: 10),
+      receiveTimeout: Duration(seconds: 10),
     ),
   );
 
