@@ -3,6 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/core/widget/base_scaffold.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:hackerton/services/screenshot_service.dart';
 
 class ChoosePartnerScreen extends StatefulWidget {
   const ChoosePartnerScreen({super.key});
@@ -15,6 +17,21 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
   int? selectedIndex;
   bool isNavigating = false;
 
+  Future<void> _startOverlay() async {
+    // 오버레이 시작
+    await FlutterOverlayWindow.showOverlay(
+      enableDrag: false,
+      overlayTitle: "대화 분석",
+      overlayContent: "대화 분석이 필요해요",
+      flag: OverlayFlag.focusPointer,
+      visibility: NotificationVisibility.visibilityPublic,
+      positionGravity: PositionGravity.none,
+      width: WindowSize.matchParent,
+      height: 800,
+      startPosition: const OverlayPosition(0, 0),
+    );
+  }
+
   void _handleItemTap(int index) async {
     if (isNavigating) return;
 
@@ -26,8 +43,11 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
-      // TODO: 다음 페이지로 이동
-      // Navigator.push(context, MaterialPageRoute(builder: (context) => NextScreen()));
+      // 오버레이 시작
+      await _startOverlay();
+
+      // 오버레이가 성공적으로 표시되면 앱을 백그라운드로 이동 (시스템 홈 화면)
+      await ScreenshotService.moveToBackground();
     }
   }
 
