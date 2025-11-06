@@ -6,7 +6,7 @@ import 'package:hackerton/presentation/verify/verify_screen.dart';
 import 'package:hackerton/splash_screen.dart';
 
 final router = GoRouter(
-  initialLocation: '/quiz',
+  initialLocation: '/',
   routes: [
     GoRoute(
       path: '/',
