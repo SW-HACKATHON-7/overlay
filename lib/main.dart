@@ -208,15 +208,15 @@ class _MyAppState extends ConsumerState<MyApp> {
           );
       print('Provider 저장 완료');
 
-      // 분석 결과 화면으로 이동
+      // 분석 결과 화면으로 이동 (바로 호출)
       print('화면 이동 시작...');
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        print('PostFrameCallback 실행 - router.go 호출');
+      Future.delayed(Duration.zero, () {
+        print('Future.delayed 실행 - router.go 호출');
         router.go('/analysis_result');
         print('router.go 완료');
       });
 
-      print('✓ 분석 결과 저장 및 화면 이동 완료');
+      print('✓ 분석 결과 저장 및 화면 이동 스케줄링 완료');
     } catch (e, stackTrace) {
       print('❌ Error handling analysis result: $e');
       print('Stack trace: $stackTrace');
