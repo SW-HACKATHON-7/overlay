@@ -66,6 +66,19 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
     _scrollToBottom();
   }
 
+  void _showAnalysis(int rating, String feedBack, String suggest) {
+    showDialog(
+      context: context,
+      builder: (build) {
+        return AnalyzeModal(
+          rating: rating,
+          feedBack: feedBack,
+          suggest: suggest,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(quizChatNotifierProvider);
@@ -100,7 +113,15 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
                       return msg.isUser
                           ? Padding(
                               padding: const EdgeInsets.only(bottom: 12),
-                              child: _SendMessage(message: msg),
+                              child: InkWell(
+                                  onTap: () {
+                                    _showAnalysis(
+                                      msg.impactScore!,
+                                      msg.aiMessage!,
+                                      msg.suggestedAlternative!,
+                                    );
+                                  },
+                                  child: _SendMessage(message: msg)),
                             )
                           : Padding(
                               padding: const EdgeInsets.only(bottom: 12),
@@ -249,7 +270,7 @@ class _ReceiveMessage extends StatelessWidget {
             ),
             child: Text(
               message,
-              style: HackerTonTypography.MainSmall.copyWith(
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
               ),
@@ -280,7 +301,7 @@ class _SendMessage extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: HackerTonColors.white,
+          color: HackerTonColors.black,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(12),
             topRight: Radius.circular(12),
