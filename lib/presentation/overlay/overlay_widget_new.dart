@@ -81,6 +81,9 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
 
   /// 분석 결과를 메인 앱으로 전달
   void _sendAnalysisResultToMainApp(ViewResponse viewResponse) {
+    print('=== _sendAnalysisResultToMainApp 시작 ===');
+    print('전달할 메시지 수: ${viewResponse.messages.length}');
+
     final resultData = {
       'action': 'ANALYSIS_COMPLETE',
       'sessionId': _analysisService.currentSessionId,
@@ -107,9 +110,19 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
       }).toList(),
     };
 
+    final jsonString = jsonEncode(resultData);
+    print('JSON 문자열 길이: ${jsonString.length}');
+    print('JSON 시작: ${jsonString.substring(0, jsonString.length > 200 ? 200 : jsonString.length)}...');
+
     homePort ??= IsolateNameServer.lookupPortByName(_kPortNameHome);
-    homePort?.send(jsonEncode(resultData));
-    print('분석 결과를 메인 앱으로 전달했습니다: ${viewResponse.messages.length}개 메시지');
+    print('HomePort 조회: ${homePort != null ? "성공" : "실패"}');
+
+    if (homePort != null) {
+      homePort!.send(jsonString);
+      print('✓ JSON 데이터 전송 완료: ${viewResponse.messages.length}개 메시지');
+    } else {
+      print('❌ HomePort가 null입니다 - 메시지 전송 실패');
+    }
   }
 
 
