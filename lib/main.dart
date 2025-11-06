@@ -2,9 +2,8 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'core/router/route.dart';
-import 'presentation/overlay/overlay_widget.dart';
+import 'presentation/overlay/overlay_widget_new.dart';
 import 'services/screenshot_service.dart';
 
 @pragma("vm:entry-point")
@@ -14,7 +13,7 @@ void overlayMain() {
   // 오버레이 포트가 이미 등록되어 있으면 제거
   IsolateNameServer.removePortNameMapping('OVERLAY');
 
-  runApp(const OverlayWidget());
+  runApp(const OverlayWidgetNew());
 }
 
 void main() async {
@@ -71,9 +70,9 @@ class _MyAppState extends State<MyApp> {
           final screenshots = await ScreenshotService.startAutoScroll();
           print('Auto scroll completed: ${screenshots.length} screenshots');
 
-          // 결과를 오버레이로 전송
+          // 결과를 오버레이로 전송 (스크린샷 경로 포함)
           overlayPort ??= IsolateNameServer.lookupPortByName(_kPortNameOverlay);
-          overlayPort?.send('SUCCESS:${screenshots.length}');
+          overlayPort?.send('SUCCESS:${screenshots.join(',')}');
         } catch (e) {
           print('Error during auto scroll: $e');
           overlayPort ??= IsolateNameServer.lookupPortByName(_kPortNameOverlay);
