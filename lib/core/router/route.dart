@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:hackerton/presentation/analysis_result/analysis_result_screen.dart';
 import 'package:hackerton/presentation/choosePartner/choose_partner_screen.dart';
 import 'package:hackerton/presentation/main/screens/main_screen.dart';
 import 'package:hackerton/presentation/mode_selection/mode_selection_screen.dart';
@@ -42,6 +43,11 @@ final router = GoRouter(
         return QuizChatScreen(relationship: relationship ?? '직장 상사');
       },
     ),
+    GoRoute(
+      path: '/analysis_result',
+      name: RouteNames.analysisResult,
+      builder: (context, state) => const AnalysisResultScreen(),
+    ),
   ],
 );
 
@@ -52,4 +58,5 @@ class RouteNames {
   static const String verify = 'verify';
   static const String choosePartner = 'choose_partner';
   static const String quiz = 'quiz';
+  static const String analysisResult = 'analysisResult';
 }

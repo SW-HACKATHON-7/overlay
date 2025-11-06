@@ -1,8 +1,10 @@
 package com.example.overlay
 
 import android.app.Activity
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
@@ -31,6 +33,8 @@ class MainActivity : FlutterActivity() {
     private var virtualDisplay: VirtualDisplay? = null
     private var imageReader: ImageReader? = null
     private var screenshotResult: MethodChannel.Result? = null
+    private var methodChannel: MethodChannel? = null
+    private var clickedMarkerData: String? = null
 
     private val mediaProjectionCallback = object : MediaProjection.Callback() {
         override fun onStop() {
@@ -39,12 +43,37 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    // 마커 클릭 브로드캐스트 리시버
+    private val markerClickReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == MarkerOverlayService.ACTION_MARKER_CLICKED) {
+                val markerData = intent.getStringExtra(MarkerOverlayService.EXTRA_MARKER_DATA)
+                if (markerData != null) {
+                    Log.d("MainActivity", "Received marker click: $markerData")
+                    // 마커 데이터 저장 (Flutter에서 가져갈 수 있도록)
+                    clickedMarkerData = markerData
+                }
+            }
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
         mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+        // MethodChannel 저장
+        methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+
+        // 브로드캐스트 리시버 등록
+        val filter = IntentFilter(MarkerOverlayService.ACTION_MARKER_CLICKED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(markerClickReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(markerClickReceiver, filter)
+        }
+
+        methodChannel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "requestPermission" -> {
                     requestScreenCapturePermission(result)
@@ -80,6 +109,24 @@ class MainActivity : FlutterActivity() {
                 "moveToBackground" -> {
                     moveTaskToBack(true)
                     result.success(null)
+                }
+                "showMarkers" -> {
+                    val markersJson = call.argument<String>("markers")
+                    if (markersJson != null) {
+                        showMarkers(markersJson)
+                        result.success(true)
+                    } else {
+                        result.error("INVALID_ARGUMENT", "markers argument is null", null)
+                    }
+                }
+                "clearMarkers" -> {
+                    clearMarkers()
+                    result.success(null)
+                }
+                "getMarkerClickData" -> {
+                    // 클릭된 마커 데이터 반환 (한 번 읽으면 클리어)
+                    result.success(clickedMarkerData)
+                    clickedMarkerData = null
                 }
                 else -> {
                     result.notImplemented()
@@ -286,8 +333,33 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    private fun showMarkers(markersJson: String) {
+        val intent = Intent(this, MarkerOverlayService::class.java).apply {
+            action = MarkerOverlayService.ACTION_SHOW_MARKERS
+            putExtra(MarkerOverlayService.EXTRA_MARKERS_DATA, markersJson)
+        }
+        startService(intent)
+        Log.d("MainActivity", "Started marker overlay service")
+    }
+
+    private fun clearMarkers() {
+        val intent = Intent(this, MarkerOverlayService::class.java).apply {
+            action = MarkerOverlayService.ACTION_CLEAR_MARKERS
+        }
+        startService(intent)
+        Log.d("MainActivity", "Cleared markers")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         stopScreenCapture()
+        clearMarkers()
+
+        // 브로드캐스트 리시버 해제
+        try {
+            unregisterReceiver(markerClickReceiver)
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error unregistering receiver: ${e.message}")
+        }
     }
 }
