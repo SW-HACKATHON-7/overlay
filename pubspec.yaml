@@ -41,6 +41,9 @@ dependencies:
   flutter_svg: ^2.2.2
   hooks_riverpod: ^2.6.1
   flutter_dash: ^1.0.0
+  dio: ^5.9.0
+  retrofit: ^4.9.0
+  build_runner: ^2.10.1
 
 dev_dependencies:
   flutter_test:
