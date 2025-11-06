@@ -45,8 +45,6 @@ class AnalyzeModal extends StatelessWidget {
           title: '모범 답안',
           content: suggest,
         ),
-        const SizedBox(height: 12),
-        GradientButton(text: '복기 종료하기', onPressed: () {}),
       ],
     );
 
