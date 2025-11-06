@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hackerton/core/enum/feedback_enum.dart';
 import 'package:hackerton/data/provider/api_provider.dart';
 import 'package:hackerton/presentation/quiz/quiz_chat_state.dart';
+import 'package:dio/dio.dart';
 
 class QuizChatNotifier extends StateNotifier<QuizChatState> {
   final Ref ref;
@@ -35,10 +36,29 @@ class QuizChatNotifier extends StateNotifier<QuizChatState> {
         threadId: response.threadId,
         isLoading: false,
       );
-    } catch (e) {
+    } on DioException catch (e) {
+      // 네트워크 오류 처리
+      String errorMessage;
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        errorMessage = '서버 응답 시간이 초과되었습니다. 다시 시도해주세요.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        errorMessage = '네트워크 연결을 확인해주세요.';
+      } else if (e.response?.statusCode == 500) {
+        errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      } else {
+        errorMessage = '대화 시작에 실패했습니다. 다시 시도해주세요.';
+      }
+
       state = state.copyWith(
         isLoading: false,
-        errorMessage: '대화 시작에 실패했습니다: $e',
+        errorMessage: errorMessage,
+      );
+    } catch (e) {
+      // 기타 오류 (파싱 오류 등)
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: '알 수 없는 오류가 발생했습니다. 다시 시도해주세요.',
       );
     }
   }
@@ -52,6 +72,8 @@ class QuizChatNotifier extends StateNotifier<QuizChatState> {
       text: message,
       isUser: true,
     );
+
+    final previousMessages = state.messages; // 실패 시 롤백용
 
     state = state.copyWith(
       messages: [...state.messages, userMessage],
@@ -94,10 +116,31 @@ class QuizChatNotifier extends StateNotifier<QuizChatState> {
         messages: updatedMessages,
         isLoading: false,
       );
-    } catch (e) {
+    } on DioException catch (e) {
+      // 네트워크 오류 처리 - 낙관적 업데이트 롤백
+      String errorMessage;
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        errorMessage = '서버 응답 시간이 초과되었습니다. 다시 시도해주세요.';
+      } else if (e.type == DioExceptionType.connectionError) {
+        errorMessage = '네트워크 연결을 확인해주세요.';
+      } else if (e.response?.statusCode == 500) {
+        errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      } else {
+        errorMessage = '메시지 전송에 실패했습니다. 다시 시도해주세요.';
+      }
+
       state = state.copyWith(
+        messages: previousMessages, // 이전 메시지로 롤백
         isLoading: false,
-        errorMessage: '메시지 전송에 실패했습니다: $e',
+        errorMessage: errorMessage,
+      );
+    } catch (e) {
+      // 기타 오류 (파싱 오류 등) - 낙관적 업데이트 롤백
+      state = state.copyWith(
+        messages: previousMessages, // 이전 메시지로 롤백
+        isLoading: false,
+        errorMessage: '알 수 없는 오류가 발생했습니다. 다시 시도해주세요.',
       );
     }
   }

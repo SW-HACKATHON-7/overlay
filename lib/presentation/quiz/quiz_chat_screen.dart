@@ -21,6 +21,7 @@ class QuizChatScreen extends ConsumerStatefulWidget {
 class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  int _previousMessageCount = 0;
 
   @override
   void initState() {
@@ -41,11 +42,13 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       Future.delayed(const Duration(milliseconds: 100), () {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
       });
     }
   }
@@ -63,7 +66,16 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(quizChatNotifierProvider);
 
+    // 메시지 개수가 변경되면 자동 스크롤
+    if (state.messages.length != _previousMessageCount) {
+      _previousMessageCount = state.messages.length;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
+    }
+
     return BaseScaffold(
+      resizeToAvoidBottomInset: true,
       appBar: BackAppbar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,14 +87,23 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
           if (state.errorMessage != null)
             Container(
               padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
               decoration: BoxDecoration(
                 color: Colors.red.shade100,
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red.shade300),
               ),
-              child: Text(
-                state.errorMessage!,
-                style: const TextStyle(color: Colors.red),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      state.errorMessage!,
+                      style: TextStyle(color: Colors.red.shade700, fontSize: 13),
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -130,50 +151,70 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
                 ),
               ],
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: '메시지를 입력하세요...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
+            child: SafeArea(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _messageController,
+                      enabled: !state.isLoading,
+                      decoration: InputDecoration(
+                        hintText: state.isLoading ? '메시지 전송 중...' : '메시지를 입력하세요...',
+                        hintStyle: TextStyle(
+                          color: state.isLoading ? Colors.grey.shade400 : Colors.grey.shade600,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: state.isLoading ? Colors.grey.shade200 : Colors.grey.shade100,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
                       ),
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                    ),
-                    maxLines: null,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: state.isLoading ? null : _sendMessage,
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      gradient: state.isLoading
-                          ? null
-                          : HackerTonGradients.orangeToPink,
-                      color: state.isLoading ? Colors.grey : null,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.send,
-                      color: Colors.white,
-                      size: 24,
+                      maxLines: null,
+                      maxLength: 500,
+                      buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
+                        return null; // 글자 수 카운터 숨김
+                      },
+                      textInputAction: TextInputAction.send,
+                      onSubmitted: (_) => state.isLoading ? null : _sendMessage(),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: state.isLoading ? null : _sendMessage,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: state.isLoading
+                            ? null
+                            : HackerTonGradients.orangeToPink,
+                        color: state.isLoading ? Colors.grey.shade300 : null,
+                        shape: BoxShape.circle,
+                        boxShadow: state.isLoading
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: Colors.orange.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                      ),
+                      child: Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
