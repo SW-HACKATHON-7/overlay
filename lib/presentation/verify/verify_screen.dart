@@ -55,9 +55,9 @@ class _VerifyScreenState extends State<VerifyScreen> {
                         color: HackerTonColors.grey,
                       ),
                     ),
-                    const SizedBox(height: 60),
+                    Spacer(),
                     PermissionItem(
-                      label: '내 위치에 대한 허용',
+                      label: '내 화면 대한 허용',
                       isChecked: locationPermission,
                       onChanged: (value) {
                         setState(() {
@@ -67,7 +67,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     ),
                     const SizedBox(height: 12),
                     PermissionItem(
-                      label: '카근성 기능 허용',
+                      label: '접근성 기능 허용',
                       isChecked: cameraPermission,
                       onChanged: (value) {
                         setState(() {
@@ -77,7 +77,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                     ),
                     const SizedBox(height: 12),
                     PermissionItem(
-                      label: '오바데이 기능 허용',
+                      label: '오버레이 기능 허용',
                       isChecked: notificationPermission,
                       onChanged: (value) {
                         setState(() {
@@ -89,6 +89,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
