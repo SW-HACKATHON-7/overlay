@@ -9,7 +9,7 @@ class HackerTonIcon {
   // SVG 아이콘들
   static Widget bestExcellent({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/best_excellent.svg',
+        '$_basePath/10.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -19,7 +19,7 @@ class HackerTonIcon {
 
   static Widget best({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/best.svg',
+        '$_basePath/8.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -29,7 +29,7 @@ class HackerTonIcon {
 
   static Widget blunder({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/blunder.svg',
+        '$_basePath/1.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -59,7 +59,7 @@ class HackerTonIcon {
 
   static Widget distinguished({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/distinguished.svg',
+        '$_basePath/6.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -69,7 +69,7 @@ class HackerTonIcon {
 
   static Widget excellent({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/excellent.svg',
+        '$_basePath/9.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -79,7 +79,7 @@ class HackerTonIcon {
 
   static Widget good({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/good.svg',
+        '$_basePath/5.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -99,7 +99,7 @@ class HackerTonIcon {
 
   static Widget inaccurate({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/inaccurate.svg',
+        '$_basePath/4.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -139,7 +139,7 @@ class HackerTonIcon {
 
   static Widget missedCount({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/missed_count.svg',
+        '$_basePath/2.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -149,7 +149,7 @@ class HackerTonIcon {
 
   static Widget mistake({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/mistake.svg',
+        '$_basePath/3.svg',
         width: width,
         height: height,
         colorFilter: color != null
@@ -169,7 +169,7 @@ class HackerTonIcon {
 
   static Widget theory({double? width, double? height, Color? color}) =>
       SvgPicture.asset(
-        '$_basePath/theory.svg',
+        '$_basePath/0.svg',
         width: width,
         height: height,
         colorFilter: color != null
