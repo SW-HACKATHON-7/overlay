@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/typography.dart';
+import 'package:hackerton/core/widget/base_scaffold.dart';
 
 class VerifyScreen extends StatefulWidget {
   const VerifyScreen({super.key});
@@ -16,77 +18,61 @@ class _VerifyScreenState extends State<VerifyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: HackerTonColors.white,
-      appBar: AppBar(
-        backgroundColor: HackerTonColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: HackerTonColors.black,
-            size: 20,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
+    return BaseScaffold(
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    Text(
-                      '권한을 허용해 주세요',
-                      style: HackerTonTypography.MainLarge.copyWith(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    '권한을 허용해 주세요',
+                    style: HackerTonTypography.MainLarge.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '대화 복기를 위해 권한 허용이 필요해요',
-                      style: HackerTonTypography.MainSmall.copyWith(
-                        fontSize: 14,
-                        color: HackerTonColors.grey,
-                      ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '대화 복기를 위해 권한 허용이 필요해요',
+                    style: HackerTonTypography.MainSmall.copyWith(
+                      fontSize: 14,
+                      color: HackerTonColors.grey,
                     ),
-                    Spacer(),
-                    PermissionItem(
-                      label: '내 화면 대한 허용',
-                      isChecked: locationPermission,
-                      onChanged: (value) {
-                        setState(() {
-                          locationPermission = value ?? false;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    PermissionItem(
-                      label: '접근성 기능 허용',
-                      isChecked: cameraPermission,
-                      onChanged: (value) {
-                        setState(() {
-                          cameraPermission = value ?? false;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    PermissionItem(
-                      label: '오버레이 기능 허용',
-                      isChecked: notificationPermission,
-                      onChanged: (value) {
-                        setState(() {
-                          notificationPermission = value ?? false;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                  Spacer(),
+                  PermissionItem(
+                    label: '내 화면 대한 허용',
+                    isChecked: locationPermission,
+                    onChanged: (value) {
+                      setState(() {
+                        locationPermission = value ?? false;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  PermissionItem(
+                    label: '접근성 기능 허용',
+                    isChecked: cameraPermission,
+                    onChanged: (value) {
+                      setState(() {
+                        cameraPermission = value ?? false;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  PermissionItem(
+                    label: '오버레이 기능 허용',
+                    isChecked: notificationPermission,
+                    onChanged: (value) {
+                      setState(() {
+                        notificationPermission = value ?? false;
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 50),
@@ -101,7 +87,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    // 다음으로 버튼 동작
+                    context.push('/choose_partner');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
