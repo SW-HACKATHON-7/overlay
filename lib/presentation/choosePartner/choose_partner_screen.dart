@@ -65,7 +65,7 @@ class _ChoosePartnerScreenState extends State<ChoosePartnerScreen> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     if (mounted) {
-      context.go('/quiz', extra: relationship);
+      context.push('/quiz', extra: relationship);
     }
   }
 
