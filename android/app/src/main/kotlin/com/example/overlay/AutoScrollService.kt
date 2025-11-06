@@ -69,7 +69,7 @@ class AutoScrollService : AccessibilityService() {
                     if (i > 0) {
                         performScroll()
                         // 스크롤 후 충분히 대기 (화면 안정화 + 애니메이션 완료)
-                        delay(2000)
+                        delay(3000)
                     }
 
                     // 다시 한번 체크 (delay 후)
@@ -80,16 +80,20 @@ class AutoScrollService : AccessibilityService() {
 
                     // 스크린샷 촬영
                     val path = screenshotCallback?.invoke()
+
+                    // 스크린샷 저장 완료될 때까지 대기
+                    delay(500)
+
                     if (path != null) {
-                        // 기존 스크린샷들과 유사도 비교
+                        // 마지막 스크린샷과만 비교 (화면 끝 감지)
                         var isDuplicate = false
-                        for (existingPath in screenshots) {
-                            if (isSimilarImage(existingPath, path)) {
-                                Log.d(TAG, "Similar screen detected. Stopping.")
+                        if (screenshots.isNotEmpty()) {
+                            val lastScreenshot = screenshots.last()
+                            if (isSimilarImage(lastScreenshot, path)) {
+                                Log.d(TAG, "Similar to previous screen detected. Reached end. Stopping.")
                                 File(path).delete() // 중복 파일 삭제
                                 isDuplicate = true
                                 shouldStop = true
-                                break
                             }
                         }
 
@@ -157,47 +161,29 @@ class AutoScrollService : AccessibilityService() {
         return instance != null
     }
 
-    private fun isSimilarImage(path1: String, path2: String, threshold: Double = 0.92): Boolean {
+    private fun isSimilarImage(path1: String, path2: String): Boolean {
         return try {
             val file1 = File(path1)
             val file2 = File(path2)
 
-            // 파일 크기로 먼저 빠른 체크 (20% 이상 차이나면 다른 이미지)
+            // 파일 크기로만 비교 (간단하고 빠름)
             val size1 = file1.length()
             val size2 = file2.length()
-            val sizeRatio = minOf(size1, size2).toDouble() / maxOf(size1, size2).toDouble()
 
-            if (sizeRatio < 0.8) {
-                Log.d(TAG, "Size diff too large: $sizeRatio - different images")
-                return false
+            // 크기 차이를 절대값으로 계산
+            val sizeDiff = kotlin.math.abs(size1 - size2)
+            val avgSize = (size1 + size2) / 2.0
+            val diffPercentage = (sizeDiff.toDouble() / avgSize) * 100
+
+            Log.d(TAG, "File size comparison: $size1 vs $size2 (diff: ${String.format("%.2f", diffPercentage)}%)")
+
+            // 3% 이내 차이면 같은 화면으로 판단
+            if (diffPercentage <= 3.0) {
+                Log.d(TAG, "Similar file sizes - likely same screen")
+                return true
             }
 
-            // 바이트 단위로 비교 (샘플링으로 속도 향상)
-            val bytes1 = file1.readBytes()
-            val bytes2 = file2.readBytes()
-
-            // 크기가 다르면 다른 이미지
-            if (bytes1.size != bytes2.size) {
-                Log.d(TAG, "Byte size different: ${bytes1.size} vs ${bytes2.size}")
-                return false
-            }
-
-            // 샘플링: 10바이트마다 1개씩만 비교 (속도 향상)
-            val sampleRate = 10
-            var matchingBytes = 0
-            var totalSampled = 0
-
-            for (i in bytes1.indices step sampleRate) {
-                if (bytes1[i] == bytes2[i]) {
-                    matchingBytes++
-                }
-                totalSampled++
-            }
-
-            val similarity = matchingBytes.toDouble() / totalSampled.toDouble()
-            Log.d(TAG, "Image similarity (sampled): ${String.format("%.4f", similarity)} (${totalSampled} samples)")
-
-            similarity >= threshold
+            false
         } catch (e: Exception) {
             Log.e(TAG, "Error comparing images: ${e.message}")
             false
