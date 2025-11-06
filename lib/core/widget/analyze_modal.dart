@@ -4,32 +4,81 @@ import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/core/widget/modal_frame.dart';
 
 class AnalyzeModal extends StatelessWidget {
-  const AnalyzeModal({super.key});
+  final int rating;
+  final String feedBack;
+  final String suggest;
+  final bool isDialog;
+
+  const AnalyzeModal({
+    super.key,
+    required this.rating,
+    required this.feedBack,
+    required this.suggest,
+    this.isDialog = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ModalFrame(
-      child: Column(
-        spacing: 16,
-        children: [
-          AnalysisItem(
-            icon: HackerTonIcon.blunder(),
-            title: '블런더',
-            content: '네 그래서 어제 올리진 못했죠',
-          ),
-          AnalysisItem(
-            icon: HackerTonIcon.theory(),
-            title: '피드백',
-            content: '이 답변 이후 분위기가 안좋아졌어요 다소 공격적으로 들릴 수 있어요',
-          ),
-          AnalysisItem(
-            icon: HackerTonIcon.bestExcellent(),
-            title: '모범 답안',
-            content: '"그 부분이 조금 의아했는데, 네 생각을 좀 더 듣고 싶어요" 라고 말했으면 좋았을 것 같아요',
-          ),
-          const SizedBox(height: 12),
-          GradientButton(text: '복기 종료하기', onPressed: () {}),
-        ],
+    final Widget content = Column(
+      spacing: 16,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('대화 분석', style: HackerTonTypography.MainLarge),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          ],
+        ),
+        AnalysisItem(
+          icon: HackerTonIcon.theory(),
+          title: '피드백',
+          content: feedBack,
+        ),
+        AnalysisItem(
+          icon: HackerTonIcon.bestExcellent(),
+          title: '모범 답안',
+          content: suggest,
+        ),
+        const SizedBox(height: 12),
+        GradientButton(text: '복기 종료하기', onPressed: () {}),
+      ],
+    );
+
+    if (!isDialog) {
+      return ModalFrame(child: content);
+    }
+
+    return Center(
+      child: Material(
+        color: Colors.transparent,
+        child: Stack(
+          children: [
+            Container(
+              constraints: const BoxConstraints(maxWidth: 520),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: SingleChildScrollView(child: content),
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

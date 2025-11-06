@@ -381,77 +381,79 @@ class _OverlayWidgetState extends State<OverlayWidget> {
 
   // 분석 결과 리스트
   Widget _buildAnalysisResultCard() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildAnalysisItem(
-            icon: '??',
-            iconColor: Color(0xFFFF6B6B),
-            title: '불편더',
-            description: '네 그래서 어제 올리긴 못했죠',
-          ),
-          const SizedBox(height: 12),
-          _buildAnalysisItem(
-            icon: '−',
-            iconColor: Color(0xFFD4A574),
-            title: '피드백',
-            description: '이 답변 이후 분위기가 안 좋아졌어요\n다소 공격적으로 들릴 수 있어요',
-          ),
-          const SizedBox(height: 12),
-          _buildAnalysisItem(
-            icon: '!!',
-            iconColor: Color(0xFF4CAF50),
-            title: '모범 답안',
-            description:
-                '"그 부분이 조금 의아했는데, 네 생각을 좀 더 듣고 싶어요"\n라고 말했으면 좋았을 것 같아요',
-          ),
-          const SizedBox(height: 16),
-          Container(
-            width: double.infinity,
-            height: 52,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFFF6B6B), Color(0xFFFF3D9A)],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-              borderRadius: BorderRadius.circular(8),
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAnalysisItem(
+              icon: '??',
+              iconColor: Color(0xFFFF6B6B),
+              title: '불편더',
+              description: '네 그래서 어제 올리긴 못했죠',
+            ),
+            const SizedBox(height: 12),
+            _buildAnalysisItem(
+              icon: '−',
+              iconColor: Color(0xFFD4A574),
+              title: '피드백',
+              description: '이 답변 이후 분위기가 안 좋아졌어요\n다소 공격적으로 들릴 수 있어요',
+            ),
+            const SizedBox(height: 12),
+            _buildAnalysisItem(
+              icon: '!!',
+              iconColor: Color(0xFF4CAF50),
+              title: '모범 답안',
+              description:
+                  '"그 부분이 조금 의아했는데, 네 생각을 좀 더 듣고 싶어요"\n라고 말했으면 좋았을 것 같아요',
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              height: 52,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFFF6B6B), Color(0xFFFF3D9A)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
                 borderRadius: BorderRadius.circular(8),
-                onTap: _closeOverlay,
-                child: Center(
-                  child: Text(
-                    '복기 종료하기',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      fontFamily: 'VitroCore',
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: _closeOverlay,
+                  child: Center(
+                    child: Text(
+                      '복기 종료하기',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        fontFamily: 'VitroCore',
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

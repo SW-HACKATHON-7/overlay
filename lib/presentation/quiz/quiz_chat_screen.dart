@@ -4,6 +4,7 @@ import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/icon.dart';
 import 'package:hackerton/core/design_system/typography.dart';
 import 'package:hackerton/core/enum/feedback_enum.dart';
+import 'package:hackerton/core/widget/analyze_modal.dart';
 import 'package:hackerton/core/widget/back_appbar.dart';
 import 'package:hackerton/core/widget/base_scaffold.dart';
 import 'package:hackerton/presentation/quiz/quiz_chat_notifier.dart';
@@ -28,7 +29,9 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
     super.initState();
     // 화면 진입 시 대화 시작
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(quizChatNotifierProvider.notifier).startConversation(widget.relationship);
+      ref
+          .read(quizChatNotifierProvider.notifier)
+          .startConversation(widget.relationship);
     });
   }
 
@@ -95,12 +98,14 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
+                  Icon(Icons.error_outline,
+                      color: Colors.red.shade700, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       state.errorMessage!,
-                      style: TextStyle(color: Colors.red.shade700, fontSize: 13),
+                      style:
+                          TextStyle(color: Colors.red.shade700, fontSize: 13),
                     ),
                   ),
                 ],
@@ -159,16 +164,21 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
                       controller: _messageController,
                       enabled: !state.isLoading,
                       decoration: InputDecoration(
-                        hintText: state.isLoading ? '메시지 전송 중...' : '메시지를 입력하세요...',
+                        hintText:
+                            state.isLoading ? '메시지 전송 중...' : '메시지를 입력하세요...',
                         hintStyle: TextStyle(
-                          color: state.isLoading ? Colors.grey.shade400 : Colors.grey.shade600,
+                          color: state.isLoading
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: state.isLoading ? Colors.grey.shade200 : Colors.grey.shade100,
+                        fillColor: state.isLoading
+                            ? Colors.grey.shade200
+                            : Colors.grey.shade100,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 12,
@@ -176,11 +186,15 @@ class _QuizChatScreenState extends ConsumerState<QuizChatScreen> {
                       ),
                       maxLines: null,
                       maxLength: 500,
-                      buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
+                      buildCounter: (context,
+                          {required currentLength,
+                          required isFocused,
+                          maxLength}) {
                         return null; // 글자 수 카운터 숨김
                       },
                       textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => state.isLoading ? null : _sendMessage(),
+                      onSubmitted: (_) =>
+                          state.isLoading ? null : _sendMessage(),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -362,7 +376,40 @@ class _SendMessage extends StatelessWidget {
             if (message.feedbackIcon != null)
               Transform.translate(
                 offset: const Offset(-15, -15),
-                child: _getIcon(message.feedbackIcon!),
+                child: InkWell(
+                    onTap: () {
+                      final int rating = message.score ?? 0;
+                      final String feedBack = message.aiMessage ?? '';
+                      final String suggest = message.suggestedAlternative ?? '';
+                      showGeneralDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        barrierLabel: 'Dismiss',
+                        barrierColor: Colors.black54,
+                        pageBuilder: (ctx, a1, a2) {
+                          return AnalyzeModal(
+                            rating: rating,
+                            feedBack: feedBack.isEmpty ? '피드백이 없습니다.' : feedBack,
+                            suggest: suggest.isEmpty ? '제안이 없습니다.' : suggest,
+                            isDialog: true,
+                          );
+                        },
+                        transitionBuilder: (ctx, anim, _, child) {
+                          final CurvedAnimation curved = CurvedAnimation(
+                            parent: anim,
+                            curve: Curves.easeOutCubic,
+                          );
+                          return FadeTransition(
+                            opacity: curved,
+                            child: ScaleTransition(
+                              scale: Tween<double>(begin: 0.95, end: 1).animate(curved),
+                              child: child,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: _getIcon(message.feedbackIcon!)),
               ),
             if (message.feedbackIcon != null) const SizedBox(width: 3),
             Flexible(
