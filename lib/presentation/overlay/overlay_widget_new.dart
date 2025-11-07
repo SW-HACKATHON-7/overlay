@@ -9,11 +9,13 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:hackerton/data/dto/main_api_model.dart';
 import 'package:hackerton/services/analysis_service.dart';
 import 'package:hackerton/services/screenshot_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum OverlayState {
   needAnalysis, // 대화 분석이 필요해요
   recording, // 스크롤 중
   processing, // 서버 처리 중 (OCR + AI 분석)
+  analysisCompleted, // 분석 완료 - 앱으로 돌아가세요
 }
 
 class OverlayWidgetNew extends StatefulWidget {
@@ -31,6 +33,7 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
   SendPort? homePort;
 
   late AnalysisService _analysisService;
+  String _relationship = '친구'; // 기본값
 
   @override
   void initState() {
@@ -38,6 +41,9 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
 
     // 분석 서비스 초기화
     _analysisService = AnalysisService(createApiService());
+
+    // relationship 데이터 받기
+    _loadRelationship();
 
     // 오버레이 포트 등록
     final res = IsolateNameServer.registerPortWithName(
@@ -73,6 +79,22 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
     });
   }
 
+  /// relationship 데이터 로드
+  Future<void> _loadRelationship() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final relationship = prefs.getString('relationship');
+      if (relationship != null) {
+        setState(() {
+          _relationship = relationship;
+        });
+        print('오버레이에서 relationship 수신: $_relationship');
+      }
+    } catch (e) {
+      print('relationship 로드 실패: $e');
+    }
+  }
+
   @override
   void dispose() {
     IsolateNameServer.removePortNameMapping(_kPortNameOverlay);
@@ -87,7 +109,7 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
     final resultData = {
       'action': 'ANALYSIS_COMPLETE',
       'sessionId': _analysisService.currentSessionId,
-      'relationship': 'FRIEND', // TODO: 실제 관계 타입
+      'relationship': _relationship,
       'messages': viewResponse.messages.map((msg) {
         return {
           'messageId': msg.messageId,
@@ -171,9 +193,10 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
 
       // 3. 세션 처리 (OCR + 병합 + AI 분석) - 완료될 때까지 대기
       print('서버 처리 중 (OCR + 병합 + AI 분석)...');
+      print('Relationship: $_relationship');
       final processResponse = await _analysisService.processSession(
-        relationship: 'FRIEND',
-        relationshipInfo: '친한 친구',
+        relationship: _relationship,
+        relationshipInfo: _relationship,
       );
 
       if (processResponse == null) {
@@ -214,9 +237,14 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
       _sendAnalysisResultToMainApp(viewResponse);
       print('✓ 메인 앱으로 데이터 전송 완료');
 
-      // 메시지 전달을 위해 충분히 대기 후 오버레이 닫기
-      print('오버레이 닫기 전 대기 중...');
-      await Future.delayed(const Duration(seconds: 2));
+      // 6. 분석 완료 상태로 전환 (UI 표시)
+      setState(() {
+        currentState = OverlayState.analysisCompleted;
+      });
+      print('분석 완료 상태로 전환 - 3초 후 오버레이 닫힘');
+
+      // 7. 3초 후 오버레이 닫기
+      await Future.delayed(const Duration(seconds: 3));
       print('오버레이 닫기 시작');
       FlutterOverlayWindow.closeOverlay();
     } catch (e) {
@@ -293,6 +321,8 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
         return _buildRecordingCard();
       case OverlayState.processing:
         return _buildProcessingCard();
+      case OverlayState.analysisCompleted:
+        return _buildAnalysisCompletedCard();
     }
   }
 
@@ -409,6 +439,55 @@ class _OverlayWidgetNewState extends State<OverlayWidgetNew> {
           const SizedBox(height: 8),
           const Text(
             'OCR + AI 분석 중입니다',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF9E9E9E),
+              fontFamily: 'VitroCore',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 분석 완료 - 앱으로 돌아가세요
+  Widget _buildAnalysisCompletedCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.check_circle,
+            color: Color(0xFF4CAF50),
+            size: 48,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            '분석이 완료되었어요',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontFamily: 'VitroCore',
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '앱으로 돌아가 주세요',
             style: TextStyle(
               fontSize: 14,
               color: Color(0xFF9E9E9E),

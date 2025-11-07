@@ -28,7 +28,10 @@ final router = GoRouter(
     GoRoute(
       path: '/verify',
       name: RouteNames.verify,
-      builder: (context, state) => const VerifyScreen(),
+      builder: (context, state) {
+        final relationship = state.extra as String? ?? '친구';
+        return VerifyScreen(relationship: relationship);
+      },
     ),
     GoRoute(
       path: '/choose_partner',

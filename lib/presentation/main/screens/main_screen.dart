@@ -1,25 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hackerton/core/design_system/color.dart';
 import 'package:hackerton/core/design_system/icon.dart';
 import 'package:hackerton/core/design_system/typography.dart';
+import 'package:hackerton/presentation/analysis_result/analysis_result_notifier.dart';
 import 'package:hackerton/presentation/choosePartner/choose_partner_screen.dart';
 import 'package:hackerton/presentation/history/history_screen.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends ConsumerStatefulWidget {
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  ConsumerState<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends ConsumerState<MainScreen> {
   int index = 0;
+  bool _hasCheckedAnalysisResult = false;
 
   final pages = [
     HomeScreen(),
     ChoosePartnerScreen(),
     HistoryScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // 분석 결과 체크 및 자동 이동
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndNavigateToAnalysisResult();
+    });
+  }
+
+  void _checkAndNavigateToAnalysisResult() {
+    if (_hasCheckedAnalysisResult) return;
+
+    print('MainScreen: 분석 결과 체크 중...');
+    final analysisState = ref.read(analysisResultNotifierProvider);
+
+    if (analysisState.messages.isNotEmpty) {
+      print('MainScreen: 분석 결과 발견! ${analysisState.messages.length}개 메시지');
+      print('MainScreen: 분석 결과 화면으로 이동 시작');
+
+      _hasCheckedAnalysisResult = true;
+
+      // 여러 방법으로 시도
+      Future.delayed(const Duration(milliseconds: 200), () {
+        print('MainScreen: context.push 시도');
+        try {
+          context.push('/analysis_result');
+          print('✓ context.push 완료');
+        } catch (e) {
+          print('❌ context.push 실패: $e');
+        }
+      });
+    } else {
+      print('MainScreen: 분석 결과 없음');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            context.push('/verify');
+            context.push('/choose_partner');
           },
           backgroundColor: Colors.transparent, // 필수. 기본 배경 제거
           elevation: 6,
