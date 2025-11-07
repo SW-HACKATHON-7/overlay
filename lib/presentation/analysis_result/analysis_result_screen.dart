@@ -298,6 +298,7 @@ class _SendMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final feedbackIcon =
         message.score != null ? _getFeedbackIcon(message.score) : null;
+    final backgroundColor = _getScoreColor(message.score);
 
     return Align(
       alignment: Alignment.centerRight,
